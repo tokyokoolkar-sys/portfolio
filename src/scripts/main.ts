@@ -430,15 +430,18 @@ function darkBar(who: string, dark: boolean) {
   document.querySelector(".index-bar")?.classList.toggle("is-dark", darkFor.size > 0);
 }
 function watchDark() {
-  // When Research is pinned, measure its pin wrapper, which includes the pin's scroll.
-  const research = $("#research");
-  const wrap = research.parentElement;
-  ScrollTrigger.create({
-    trigger: wrap?.classList.contains("pin-spacer") ? wrap : research,
-    start: "top 60px",
-    end: "bottom 60px",
-    onToggle: (self) => darkBar("research", self.isActive),
-  });
+  // Research and Contact are both on ink. A pinned section is measured by its
+  // pin wrapper, which includes the pin's scroll.
+  for (const id of ["research", "contact"]) {
+    const el = $(`#${id}`);
+    const wrap = el.parentElement;
+    ScrollTrigger.create({
+      trigger: wrap?.classList.contains("pin-spacer") ? wrap : el,
+      start: "top 60px",
+      end: "bottom 60px",
+      onToggle: (self) => darkBar(id, self.isActive),
+    });
+  }
 }
 
 /* ── Scene 05: Research desk ─────────────────────────────────────
@@ -492,6 +495,64 @@ function setupResearch(stage: boolean) {
     .to({}, { duration: 0.4 });
 }
 
+/* ── Scene 06: Contact ──────────────────────────────────────────
+ * Still on ink. As the section arrives, its headline rises like the others'.
+ * Then it pins and the block comes back one last time: a single orange pixel
+ * in the button's centre that doubles in hard steps (a square up to the
+ * button's height, then wider) until it is the email button. The address
+ * rises into it, the links follow, and ATAQAH rises at the foot of the page.
+ */
+function setupContact() {
+  const button = $(".contact-email");
+  const fill = $(".contact-email-fill");
+  const lines = SplitText.create([".contact-label", ".contact-line"], { type: "lines", mask: "lines" }).lines;
+  const address = SplitText.create(".contact-email-text", { type: "lines", mask: "lines" }).lines;
+  const name = SplitText.create(".contact-name", { type: "chars", mask: "chars" }).chars;
+
+  // Step i: the pixel is 8·2^i px, capped by the button's own size.
+  const STEPS = 8;
+  const inset = (i: number) => {
+    const W = button.offsetWidth;
+    const H = button.offsetHeight;
+    const size = 8 * 2 ** i;
+    const w = i >= STEPS ? W : Math.min(W, size);
+    const h = i >= STEPS ? H : Math.min(H, size);
+    const y = (H - h) / 2;
+    const x = (W - w) / 2;
+    return `inset(${y}px ${x}px ${y}px ${x}px)`;
+  };
+
+  gsap.set(fill, { clipPath: "inset(50% 50% 50% 50%)" });
+
+  // The headline rises while the section scrolls in...
+  gsap
+    .timeline({ scrollTrigger: { trigger: "#contact", start: "top 80%", end: "top top", scrub: true } })
+    .from(lines, { yPercent: 105, stagger: 0.12, ease: "power3.out" }, 0.3);
+
+  // ...then the section pins, so the pixel grows where you can see it.
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: "#contact",
+      start: "top top",
+      end: pinLength(1.4, 1),
+      pin: true,
+      scrub: true,
+      invalidateOnRefresh: true,
+    },
+  });
+  for (let i = 0; i <= STEPS; i++) tl.set(fill, { clipPath: () => inset(i) }, 0.05 + i * 0.1);
+  tl.from(address, { yPercent: 105, duration: 0.25, ease: "power3.out" }, ">+0.05")
+    .from(
+      [".contact-copy", ".contact-links", ".contact-where"],
+      { autoAlpha: 0, y: 16, stagger: 0.06, duration: 0.25, ease: "power2.out" },
+      ">-0.1",
+    )
+    // The bookend: ATAQAH rises at the foot of the page.
+    .from(name, { yPercent: 105, stagger: 0.05, duration: 0.35, ease: "power3.out" }, ">-0.05")
+    .from(".contact-colophon", { autoAlpha: 0, duration: 0.3, ease: "power2.out" }, "<+0.1")
+    .to({}, { duration: 0.15 });
+}
+
 /* ── Boot ────────────────────────────────────────────────────────── */
 async function boot() {
   window.__introStarted = true;
@@ -511,6 +572,7 @@ async function boot() {
   setupSkills(stage);
   setupWork(stage);
   setupResearch(stage);
+  setupContact();
   watchDark();
   ScrollTrigger.refresh();
 }

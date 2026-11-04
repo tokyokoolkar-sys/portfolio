@@ -8,7 +8,7 @@ Agreed in the grilling session on 2026-11-04. This is the source of truth for sc
 - Headline: *"I design interfaces and build what runs behind them."*
 - Audience: recruiters hiring interns from mid-2027.
 - Location line: *Jakarta, Indonesia · Open to internships from mid-2027 · Remote or on-site.*
-- Contact: `ataqah.ramadhan@gmail.com` (mailto + copy button), LinkedIn, GitHub. Add a CV button when a CV exists.
+- Contact: `ataqah.ramadhan@gmail.com` (mailto + copy button), LinkedIn (`linkedin.com/in/ataramadhan`), GitHub (`tokyokoolkar-sys`). Add a CV button when a CV exists.
 - English only. One page.
 
 ## Stack and hosting
@@ -70,6 +70,7 @@ Agreed in the grilling session on 2026-11-04. This is the source of truth for sc
    - **solana-wallet-research:** a terminal replay of the MCP tools plus a calibration chart.
    - **EvenLighter:** labelled "in design". Covers the ADRs, threat model and audit-log design.
 6. **Contact** (label 06). The block becomes the email button. ATAQAH returns small in the footer as a bookend. Colophon.
+   **Built (4 Nov 2026).** Stays on the Research desk's ink. The headline rises as the section arrives, then it pins (about 1.4 screens on desktop, 1 on phones) and the block comes back one last time: one orange pixel in the button's centre doubles in hard steps, a square up to the button's height and then wider, until it is the email button. The address rises into it, then Copy, LinkedIn, GitHub and the location line, and ATAQAH rises in orange Bodoni at the foot with the colophon. Copy shows only when the clipboard is available. Reduced motion and no JS show everything with the button already orange. Headline "Send me / the hard part." is draft copy.
 
 ## Copy
 

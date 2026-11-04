@@ -8,11 +8,7 @@ import SkillsBand from "../components/SkillsBand.astro";
 import WorkScene from "../components/WorkScene.astro";
 import CrawlLayer from "../components/CrawlLayer.astro";
 import ResearchScene from "../components/ResearchScene.astro";
-
-// Scenes still to build, kept as anchors so the index bar works end to end.
-const upcoming = [
-  { id: "contact", n: "06", name: "Contact" },
-];
+import ContactScene from "../components/ContactScene.astro";
 ---
 
 <Layout>
@@ -25,15 +21,7 @@ const upcoming = [
     <SkillsBand />
     <WorkScene />
     <ResearchScene />
-    {
-      upcoming.map((s) => (
-        <section id={s.id} class="flex min-h-svh items-end border-t border-ink/15 px-5 pb-8 md:px-8">
-          <p class="type-label">
-            ({s.n}) {s.name}, in production
-          </p>
-        </section>
-      ))
-    }
+    <ContactScene />
   </main>
 </Layout>
 

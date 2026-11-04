@@ -1,0 +1,204 @@
+---
+/**
+ * Scene 06: Contact, still on the Research desk's ink.
+ * The orange block comes back here one last time: a single pixel that grows
+ * in hard steps, like the crawl's blocks, until it is the email button.
+ * ATAQAH returns small at the foot of the page as a bookend to the title.
+ * Reduced motion and no JS: everything shown, the button already orange.
+ * Headline is draft copy.
+ */
+const email = "ataqah.ramadhan@gmail.com";
+const links = [
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/ataramadhan" },
+  { label: "GitHub", href: "https://github.com/tokyokoolkar-sys" },
+];
+---
+
+<section id="contact" class="contact" aria-labelledby="contact-heading">
+  <div class="contact-inner">
+    <p class="contact-label type-label">(06) Contact</p>
+    <h2 id="contact-heading" class="contact-headline font-head font-bold">
+      <span class="contact-line">Send me</span>
+      <span class="contact-line contact-line--hot">the hard part.</span>
+    </h2>
+
+    <div class="contact-actions">
+      <a class="contact-email" href={`mailto:${email}`}>
+        <span class="contact-email-fill" aria-hidden="true"></span>
+        <span class="contact-email-text">{email}</span>
+      </a>
+      <button type="button" class="contact-copy type-label" data-email={email} hidden>
+        <span class="contact-copy-label">Copy</span>
+      </button>
+    </div>
+
+    <ul class="contact-links">
+      {
+        links.map((l) => (
+          <li>
+            <a class="contact-link type-label" href={l.href} target="_blank" rel="noopener">
+              {l.label} ↗
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="contact-where type-label">Jakarta, Indonesia · Open to internships from mid-2027 · Remote or on-site</p>
+  </div>
+
+  <footer class="contact-foot">
+    <p class="contact-name type-display text-signal" aria-hidden="true">ATAQAH</p>
+    <p class="contact-colophon type-label">
+      Set in Bodoni Moda, Inter Tight, Inter and JetBrains Mono. Built with Astro, GSAP and Lenis. © 2026 Ataqah
+      Ramadhan.
+    </p>
+  </footer>
+</section>
+
+<script>
+  // Copy the address. Only shown when the clipboard is there to use.
+  const copy = document.querySelector<HTMLButtonElement>(".contact-copy");
+  const label = copy?.querySelector<HTMLElement>(".contact-copy-label");
+  if (copy && label && navigator.clipboard) {
+    copy.hidden = false;
+    let reset = 0;
+    copy.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(copy.dataset.email ?? "");
+        label.textContent = "Copied";
+      } catch {
+        label.textContent = "Copy failed";
+      }
+      clearTimeout(reset);
+      reset = window.setTimeout(() => (label.textContent = "Copy"), 1800);
+    });
+  }
+</script>
+
+<style>
+  .contact {
+    position: relative;
+    z-index: 10;
+    min-height: 100svh;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    display: grid;
+    grid-template-rows: 1fr auto;
+    padding: 6rem 1.25rem 1.5rem;
+  }
+  .contact-inner {
+    align-self: center;
+  }
+  .contact-headline {
+    margin-top: 1.25rem;
+    font-size: clamp(2.6rem, 6.4vw, 7.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+  }
+  .contact-line {
+    display: block;
+  }
+  .contact-line--hot {
+    color: var(--color-signal);
+  }
+
+  .contact-actions {
+    margin-top: clamp(2rem, 4vw, 3.5rem);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+  }
+  /* The block's last job. */
+  .contact-email {
+    position: relative;
+    display: inline-block;
+    padding: 0.85em 1.1em;
+    color: var(--color-ink);
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: clamp(1.05rem, 2.6vw, 2.5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    overflow-wrap: anywhere;
+  }
+  .contact-email-fill {
+    position: absolute;
+    inset: 0;
+    background: var(--color-signal);
+    transition: background-color 0.2s ease;
+  }
+  .contact-email-text {
+    position: relative;
+    display: block;
+  }
+  .contact-email:hover .contact-email-fill,
+  .contact-email:focus-visible .contact-email-fill {
+    background: var(--color-cream);
+  }
+  .contact-email:focus-visible {
+    outline-color: var(--color-cream);
+  }
+
+  .contact-copy {
+    padding: 0.5rem 0;
+    color: inherit;
+    cursor: pointer;
+    background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 100% 1px;
+  }
+  .contact-copy:hover,
+  .contact-copy:focus-visible {
+    color: var(--color-signal);
+  }
+
+  .contact-links {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1.75rem;
+  }
+  .contact-link {
+    background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1px;
+    transition: background-size 0.3s ease;
+  }
+  .contact-link:hover,
+  .contact-link:focus-visible {
+    background-size: 100% 1px;
+  }
+  .contact-where {
+    margin-top: 1rem;
+    opacity: 0.6;
+  }
+
+  .contact-foot {
+    margin-top: 4rem;
+    display: grid;
+    gap: 1rem;
+    align-items: end;
+  }
+  .contact-name {
+    font-size: clamp(3rem, 9vw, 8.5rem);
+    line-height: 0.8;
+  }
+  .contact-colophon {
+    max-width: 36rem;
+    opacity: 0.5;
+  }
+
+  @media (min-width: 768px) {
+    .contact {
+      padding: 6rem 2rem 2rem;
+    }
+    /* Starts on grid column 3, like About's and Research's headlines. */
+    .contact-inner {
+      margin-left: calc((100% - 11 * 1.25rem) / 6 + 2.5rem);
+    }
+    .contact-foot {
+      grid-template-columns: auto 1fr;
+      gap: 2rem;
+    }
+    .contact-colophon {
+      justify-self: end;
+      text-align: right;
+    }
+  }
+</style>
