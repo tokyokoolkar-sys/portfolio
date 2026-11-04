@@ -10,6 +10,8 @@ type Key = View & { t: number };
 // x, y: the point to centre on, as a fraction of the video; s: zoom.
 const PROMPT: View = { x: 0.48, y: 0.12, s: 2 };
 const AGENTS: View = { x: 0.845, y: 0.1, s: 3 };
+// Phones: just the Agents panel, where OpenCode and Command Code report in.
+const AGENTS_ONLY: View = { x: 0.93, y: 0.1, s: 3 };
 // Never show the recording's text below about 85% of its own size, so
 // narrow frames (phones) zoom in harder.
 const MIN_SCALE = 0.85;
@@ -51,10 +53,12 @@ export function relayCam(root: HTMLElement, managed = false): RelayCam | undefin
   video.controls = false;
 
   const frame = () => {
-    const c = at(video.currentTime);
     const fw = root.clientWidth;
     const fh = root.clientHeight;
     if (!fw || !fh) return;
+    // A phone-width frame can't fit a readable prompt, so it stays on the
+    // Agents panel, where the relay's work shows up.
+    const c = fw < 480 ? AGENTS_ONLY : at(video.currentTime);
     // Zoom: the view's own, at least readable, and enough to fill a tall frame.
     const s = Math.max(c.s, (MIN_SCALE * (video.videoWidth || 2560)) / fw, fh / fw / ratio());
     const visW = 1 / s;

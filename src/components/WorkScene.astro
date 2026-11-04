@@ -25,31 +25,40 @@ type Project = {
     | { kind: "image"; src: string; alt: string; width: number; height: number }
     | { kind: "video"; src: string; poster: string; tag: string; label: string }
     | { kind: "flow"; tone: "ink" | "cream"; tag: string; steps: Step[] }
-    | { kind: "terminal"; tag: string; lines: { text: string; tone?: "dim" | "hot" | "cmd" }[] };
+    | { kind: "terminal"; tag: string; lines: { text: string; narrow?: string; tone?: "dim" | "hot" | "cmd" }[] };
 };
 
 const gh = "https://github.com/tokyokoolkar-sys";
 
 const projects: Project[] = [
   {
-    id: "hedgehound",
+    id: "skillforge",
     n: "01",
-    title: "HedgeHound",
-    meta: "2026 · Design and build, solo",
-    hook: "A website that shows crypto funding spreads as a night sky. Coins are stars, and the scanner is a radar sweeping the dark.",
+    title: "SkillForge",
+    meta: "2026 · AWS × SAP Agentic AI University Hackathon · 2nd place, Intelligent Manufacturing track · 224 teams",
+    hook: "An AI supervisor for Indonesian factories. When a machine fails, it plans the repair and a new schedule, then waits for a person before it writes to SAP.",
+    role: "My job was the problems that got past my teammates and their AI tools: the app layer, the architecture, and the bugs nobody else could crack.",
     points: [
-      "One persistent three.js canvas with custom GLSL for the stars, the glass hound and a pixel-bite transition.",
-      "Scroll drives every transition. When you stop scrolling, the sky stops too.",
-      "Every number is tagged LIVE, PAPER or SAMPLE, so nothing on screen is invented.",
+      "Re-plans a disrupted shift in 4.8 seconds: it finds the fix and the mechanic, checks SAP for parts, and reschedules with OR-Tools CP-SAT.",
+      "In the demo plant, it cut modelled late-delivery penalties from Rp 150.8M to Rp 3.85M.",
+      "Three scenarios priced in Rupiah, with field-level diffs and an ERP drift check before write-back.",
+      "Every AI claim cites the plant document it came from.",
     ],
-    stack: "Next.js 16 · React Three Fiber · GLSL · GSAP · Lenis",
-    links: [{ label: "Code", href: `${gh}/HedgeHound` }],
+    stack: "FastAPI · React · OR-Tools · RAG · SAP S/4HANA",
+    // The team repo (fadilaisy/Sokrates). Sokrates-test is the author's fork for fixes.
+    links: [{ label: "Code", href: "https://github.com/fadilaisy/Sokrates" }],
     media: {
-      kind: "image",
-      src: "/img/work/hedgehound.webp",
-      alt: "HedgeHound's poster: a dark hound sniffing a torn chart under the words Hedge Hound, Sniff the spread",
-      width: 1200,
-      height: 630,
+      kind: "flow",
+      tone: "cream",
+      tag: "Supervised autonomy",
+      steps: [
+        { n: "01", title: "Alarm", note: "A machine on the line raises a fault" },
+        { n: "02", title: "Skill", note: "The agent loads the matching playbook" },
+        { n: "03", title: "Reschedule", note: "CP-SAT, under 60 seconds" },
+        { n: "04", title: "Scenarios", note: "Three options, priced in Rupiah" },
+        { n: "05", title: "Approve", note: "A supervisor signs off in one click", accent: true },
+        { n: "06", title: "Write back", note: "SAP, after a drift check" },
+      ],
     },
   },
   {
@@ -75,32 +84,24 @@ const projects: Project[] = [
     },
   },
   {
-    id: "skillforge",
+    id: "hedgehound",
     n: "03",
-    title: "SkillForge",
-    meta: "2026 · AI SAP Hackathon · Team Choco Munchacho",
-    hook: "An AI supervisor for Indonesian factories. When a machine fails, it plans the repair and a new schedule, then waits for a person before it writes to SAP.",
-    role: "My job was the problems that got past my teammates and their AI tools: the app layer, the architecture, and the bugs nobody else could crack.",
+    title: "HedgeHound",
+    meta: "2026 · Design and build, solo",
+    hook: "A website that shows crypto funding spreads as a night sky. Coins are stars, and the scanner is a radar sweeping the dark.",
     points: [
-      "OR-Tools CP-SAT finds a valid reschedule in under 60 seconds.",
-      "Three scenarios priced in Rupiah, with field-level diffs and an ERP drift check before write-back.",
-      "Every AI claim cites the plant document it came from.",
+      "One persistent three.js canvas with custom GLSL for the stars, the glass hound and a pixel-bite transition.",
+      "Scroll drives every transition. When you stop scrolling, the sky stops too.",
+      "Every number is tagged LIVE, PAPER or SAMPLE, so nothing on screen is invented.",
     ],
-    stack: "FastAPI · React · OR-Tools · RAG · SAP S/4HANA",
-    // The team repo (fadilaisy/Sokrates). Sokrates-test is the author's fork for fixes.
-    links: [{ label: "Code", href: "https://github.com/fadilaisy/Sokrates" }],
+    stack: "Next.js 16 · React Three Fiber · GLSL · GSAP · Lenis",
+    links: [{ label: "Code", href: `${gh}/HedgeHound` }],
     media: {
-      kind: "flow",
-      tone: "cream",
-      tag: "Supervised autonomy",
-      steps: [
-        { n: "01", title: "Alarm", note: "A machine on the line raises a fault" },
-        { n: "02", title: "Skill", note: "The agent loads the matching playbook" },
-        { n: "03", title: "Reschedule", note: "CP-SAT, under 60 seconds" },
-        { n: "04", title: "Scenarios", note: "Three options, priced in Rupiah" },
-        { n: "05", title: "Approve", note: "A supervisor signs off in one click", accent: true },
-        { n: "06", title: "Write back", note: "SAP, after a drift check" },
-      ],
+      kind: "image",
+      src: "/img/work/hedgehound.webp",
+      alt: "HedgeHound's poster: a dark hound sniffing a torn chart under the words Hedge Hound, Sniff the spread",
+      width: 1200,
+      height: 630,
     },
   },
   {
@@ -115,14 +116,15 @@ const projects: Project[] = [
       "A stop removes all 73 liquidations, but the rule wins 17.5% of trades and needs 48.5% to break even.",
     ],
     stack: "Python · pandas · Binance public data",
-    aside: "Also on the research desk, code private: solana-wallet-research, in production, and EvenLighter, in design.",
+    aside:
+      "Also on the research desk, code private: solana-wallet-research, a research engine for Solana meme-coin wallets. It tracks follower-replay profitability, flags suspicious patterns and keeps a Claude-assisted journal, and never executes trades. EvenLighter is in design.",
     links: [{ label: "Code", href: `${gh}/BacktestEngine` }],
     media: {
       kind: "terminal",
       tag: "Real run · 4 Nov 2026",
       lines: [
-        { text: "$ python run.py --start 2025-12 --end 2026-06", tone: "cmd" },
-        { text: "[run] months=2025-12..2026-06  n=7  symbol=SYNUSDT", tone: "dim" },
+        { text: "$ python run.py --start 2025-12 --end 2026-06", narrow: "$ python run.py --start 2025-12 \\\n    --end 2026-06", tone: "cmd" },
+        { text: "[run] months=2025-12..2026-06  n=7  symbol=SYNUSDT", narrow: "[run] months=2025-12..2026-06\n      n=7  symbol=SYNUSDT", tone: "dim" },
         { text: "[run] klines loaded  : 305,280 rows", tone: "dim" },
         { text: "[run] funding loaded : 1,271 rows", tone: "dim" },
         { text: "[run] bare: 77018 trades", tone: "dim" },
@@ -130,13 +132,13 @@ const projects: Project[] = [
         { text: "[run] +stop+gate: 49240 trades", tone: "dim" },
         { text: "" },
         { text: "=== Scorecard ===" },
-        { text: "                     bare     +stop  +stop+gate" },
-        { text: "        Trades       77018     77141       49240" },
-        { text: "      Win rate       17.5%     17.5%       17.8%" },
-        { text: "         Stops           0       816         546" },
-        { text: "  Liquidations          73         0           0" },
-        { text: "   BE win rate       48.5%     48.7%       48.6%", tone: "hot" },
-        { text: "Actual win rate      17.5%     17.5%       17.8%", tone: "hot" },
+        { text: "                     bare     +stop  +stop+gate", narrow: "                 bare  +stop+gate" },
+        { text: "        Trades       77018     77141       49240", narrow: "        Trades  77018       49240" },
+        { text: "      Win rate       17.5%     17.5%       17.8%", narrow: "      Win rate  17.5%       17.8%" },
+        { text: "         Stops           0       816         546", narrow: "         Stops      0         546" },
+        { text: "  Liquidations          73         0           0", narrow: "  Liquidations     73           0" },
+        { text: "   BE win rate       48.5%     48.7%       48.6%", narrow: "   BE win rate  48.5%       48.6%", tone: "hot" },
+        { text: "Actual win rate      17.5%     17.5%       17.8%", narrow: "Actual win rate 17.5%       17.8%", tone: "hot" },
       ],
     },
   },
@@ -239,7 +241,10 @@ const projects: Project[] = [
                   <p class="flow-tag type-label">{p.media.tag}</p>
                   <div class="term-body" tabindex="0" role="region" aria-label="Backtest scorecard, scrolls sideways on small screens">
                     {p.media.lines.map((l) => (
-                      <span class:list={["term-line", l.tone && `term-line--${l.tone}`]}>{l.text || " "}</span>
+                      <span class:list={["term-line", l.tone && `term-line--${l.tone}`]}>
+                        <span class:list={["term-text", l.narrow && "term-text--wide"]}>{l.text || " "}</span>
+                        {l.narrow && <span class="term-text term-text--narrow">{l.narrow}</span>}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -337,7 +342,7 @@ const projects: Project[] = [
   }
   .work-stack {
     margin-top: 1.25rem;
-    opacity: 0.65;
+    opacity: 0.8;
   }
   .work-aside {
     margin-top: 1rem;
@@ -512,6 +517,18 @@ const projects: Project[] = [
   .term-line {
     display: block;
     white-space: pre;
+  }
+  /* Phones show the narrow form: the +stop column dropped, long lines wrapped. */
+  .term-text--narrow {
+    display: none;
+  }
+  @media (max-width: 639px) {
+    .term-text--wide {
+      display: none;
+    }
+    .term-text--narrow {
+      display: inline;
+    }
   }
   .term-line--dim {
     opacity: 0.55;
