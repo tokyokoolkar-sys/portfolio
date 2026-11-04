@@ -19,7 +19,7 @@ const links = [
       {
         links.map((l) => (
           <li>
-            <a href={l.href} class="type-label index-link">
+            <a href={l.href} class="type-label index-link link-draw">
               {l.label}
             </a>
           </li>
@@ -46,18 +46,10 @@ const links = [
 
   /* Over ink (the crawl, Contact). */
   .index-bar {
-    transition: color 0.3s ease;
+    transition: color 200ms ease;
   }
   .index-bar.is-dark {
     color: var(--color-cream);
   }
 
-  .index-link {
-    background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1px;
-    transition: background-size 0.3s ease;
-  }
-  .index-link:hover,
-  .index-link:focus-visible {
-    background-size: 100% 1px;
-  }
 </style>

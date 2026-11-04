@@ -30,6 +30,9 @@
     </div>
   </div>
 
+  <!-- The dive's hand-off: the field's orange fades in over the A's ink. -->
+  <div class="dive-wash" aria-hidden="true"></div>
+
   <div class="title-labels">
     <p class="title-label font-head text-lg leading-tight font-bold md:text-xl">
       Ataqah Ramadhan<br />
@@ -92,6 +95,15 @@
   }
   :global(.motion) .portrait-img {
     opacity: 0;
+  }
+
+  .dive-wash {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: var(--color-signal);
+    opacity: 0;
+    pointer-events: none;
   }
 
   /* ── Labels ───────────────────────────────────────── */

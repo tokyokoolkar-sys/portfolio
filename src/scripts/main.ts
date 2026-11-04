@@ -34,14 +34,24 @@ if (motion && !touch) {
   gsap.ticker.lagSmoothing(0);
 }
 
-/* ── Index bar: anchor links glide through the take ── */
+/* ── Index bar: anchor links cut straight to the scene ──
+ * A glide would fast-forward every pinned scene in between, so the take cuts
+ * instead. data-jump on a pinned scene is how far into its pin to land, 0 to
+ * 1: Work lands once its first picture is up, Contact on its finished state.
+ * Phones keep a native smooth scroll. */
 document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
   a.addEventListener("click", (e) => {
-    const target = document.querySelector(a.getAttribute("href") ?? "");
+    const target = document.querySelector<HTMLElement>(a.getAttribute("href") ?? "");
     if (!target) return;
     e.preventDefault();
-    if (lenis) lenis.scrollTo(target as HTMLElement, { duration: 1.8 });
-    else target.scrollIntoView({ behavior: motion ? "smooth" : "auto" });
+    if (!lenis) {
+      target.scrollIntoView({ behavior: motion ? "smooth" : "auto" });
+      return;
+    }
+    const pin = ScrollTrigger.getAll().find((st) => st.pin === target);
+    const at = Number(target.dataset.jump ?? 0);
+    const y = pin ? pin.start + (pin.end - pin.start) * at : target;
+    lenis.scrollTo(y, { immediate: true, force: true });
   });
 });
 
@@ -52,7 +62,6 @@ const pinLength = (desktop: number, phone: number) => () => `+=${window.innerHei
 function introTitle(chars: Element[]) {
   const img = $<HTMLImageElement>(".portrait-img");
   const canvas = $<HTMLCanvasElement>(".portrait-canvas");
-  const labels = gsap.utils.toArray<HTMLElement>(".title-label");
 
   void pixelBite(img, canvas)
     .catch(() => undefined)
@@ -61,12 +70,10 @@ function introTitle(chars: Element[]) {
       canvas.remove();
     });
 
+  // Name and role are readable on the first frame: the labels never hide.
+  // Only the giant word rises, and settles inside ~0.8s.
   gsap.set(".title-word", { visibility: "visible" });
-  gsap.set(labels, { y: 14 });
-  gsap
-    .timeline()
-    .from(chars, { yPercent: 105, duration: 0.85, ease: "expo.out", stagger: 0.055 })
-    .to(labels, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out", stagger: 0.08 }, 0.45);
+  gsap.from(chars, { yPercent: 105, duration: 0.6, ease: "expo.out", stagger: 0.04 });
 }
 
 /* ── Scene 02: The dive ──────────────────────────────────────────
@@ -113,10 +120,10 @@ function setupDive(glyph: HTMLElement) {
       },
     })
     .to(stage, { x: () => geo.dx, y: () => geo.dy, scale: () => geo.scale, ease: "power3.in", duration: 1 }, 0)
-    // The name is set in the darker text orange (contrast on cream). As the
-    // camera pushes in it warms to the field's orange, so the A's ink and the
-    // About field it hands off to are one colour. One element, one property.
-    .to(".title-word", { color: getComputedStyle(document.documentElement).getPropertyValue("--color-signal").trim(), ease: "none", duration: 0.6 }, 0.2);
+    // The name is set in the darker text orange (contrast on cream). Once the
+    // A's ink fills the frame, a full-screen wash of the field's orange fades
+    // in over it (opacity only), so the hand-off to About is one colour.
+    .fromTo(".dive-wash", { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.05 }, 0.95);
 }
 
 /* The block's resting box in viewport px. Layout values, so the block's own
@@ -203,12 +210,12 @@ function setupIntro(target: () => Rect) {
     .fromTo(
       lines,
       { yPercent: 0 },
-      { yPercent: -170, stagger: 0.06, duration: 0.35, ease: "power2.in", immediateRender: false },
+      { yPercent: -170, stagger: 0.06, duration: 0.35, ease: "power2.out", immediateRender: false },
     )
     .fromTo(
       [".intro-label", ".intro-body p"],
       { autoAlpha: 1, y: 0 },
-      { autoAlpha: 0, y: -24, stagger: 0.04, duration: 0.3, ease: "power2.in", immediateRender: false },
+      { autoAlpha: 0, y: -24, stagger: 0.04, duration: 0.3, ease: "power2.out", immediateRender: false },
       "<",
     )
     // A long, gentle squeeze of the empty field: power2 rather than power3, so
@@ -292,7 +299,7 @@ function setupSkills(stage: boolean) {
     .fromTo(
       band,
       { clipPath: "inset(0% 0% 0% 0%)" },
-      { clipPath: "inset(0% 0% 100% 0%)", duration: 0.4, ease: "power2.in" },
+      { clipPath: "inset(0% 0% 100% 0%)", duration: 0.4, ease: "power2.out" },
       out,
     )
     // ...then the strip slowly folds into the Work frame.

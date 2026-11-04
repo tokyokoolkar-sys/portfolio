@@ -15,6 +15,7 @@
   --font-display: "Bodoni Moda Variable", "Bodoni Moda", Didot, "Times New Roman", serif;
   --font-head: "Inter Tight Variable", "Inter Tight", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Inter Variable", Inter, "Helvetica Neue", Arial, sans-serif;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -41,9 +42,6 @@
   .motion .title-word {
     visibility: hidden;
   }
-  .motion .title-label {
-    opacity: 0;
-  }
 }
 
 @layer components {
@@ -57,6 +55,29 @@
     font-variation-settings: "opsz" 12;
     line-height: 0.8;
     letter-spacing: -0.02em;
+  }
+
+  /* Underline that draws in from the left on hover and focus. Transform only. */
+  .link-draw {
+    position: relative;
+  }
+  .link-draw::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 -2px 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 200ms var(--ease-out);
+  }
+  .link-draw:focus-visible::after {
+    transform: scaleX(1);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .link-draw:hover::after {
+      transform: scaleX(1);
+    }
   }
 
   /* Labels and dates: Inter Tight Medium. */
