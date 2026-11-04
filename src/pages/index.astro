@@ -4,32 +4,22 @@ import IndexBar from "../components/IndexBar.astro";
 import Block from "../components/Block.astro";
 import TitleScene from "../components/TitleScene.astro";
 import IntroScene from "../components/IntroScene.astro";
+import SkillsBand from "../components/SkillsBand.astro";
 import WorkScene from "../components/WorkScene.astro";
-
-// Scenes still to build, kept as anchors so the index bar works end to end.
-const upcoming = [
-  { id: "research", n: "05", name: "Research desk" },
-  { id: "toolbox", n: "06", name: "Toolbox" },
-  { id: "contact", n: "07", name: "Contact" },
-];
+import CrawlLayer from "../components/CrawlLayer.astro";
+import ContactScene from "../components/ContactScene.astro";
 ---
 
 <Layout>
   <IndexBar />
   <Block />
+  <CrawlLayer />
   <main>
     <TitleScene />
     <IntroScene />
+    <SkillsBand />
     <WorkScene />
-    {
-      upcoming.map((s) => (
-        <section id={s.id} class="flex min-h-svh items-end border-t border-ink/15 px-5 pb-8 md:px-8">
-          <p class="type-label">
-            ({s.n}) {s.name}, in production
-          </p>
-        </section>
-      ))
-    }
+    <ContactScene />
   </main>
 </Layout>
 

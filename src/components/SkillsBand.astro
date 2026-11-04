@@ -1,0 +1,115 @@
+---
+/**
+ * Scene 03: Toolbox, as a band between About and Work.
+ * The intro's orange field squeezes into this strip. Once it is in place the
+ * scene pins: the labels rise like About's, and each row slides in from the
+ * side it travels from (Design and Systems from the right, Frontend from the
+ * left), moving only while you scroll. On wide screens the strip then folds
+ * into the Work frame. Reduced motion and no JS
+ * get the same orange band with every row wrapped and nothing moving.
+ *
+ * Every item comes from a shipped project. Draft list: the user edits it.
+ */
+
+const groups = [
+  {
+    name: "Design",
+    items: ["Interface design", "Typography", "Motion design", "Scroll storytelling", "3D scenes", "Prototyping"],
+  },
+  {
+    name: "Frontend",
+    items: ["TypeScript", "React", "Next.js", "Astro", "Tailwind CSS", "three.js", "React Three Fiber", "GLSL", "GSAP"],
+  },
+  {
+    name: "Systems",
+    items: ["Python", "pandas", "Node", "FastAPI", "Flask", "OR-Tools", "RAG", "MCP", "SAP S/4HANA", "Git worktrees"],
+  },
+];
+---
+
+<section id="toolbox" class="skills" aria-labelledby="skills-heading">
+  <div class="skills-band">
+    <h2 id="skills-heading" class="skills-heading type-label">Toolbox</h2>
+    {
+      groups.map((g) => (
+        <div class="skills-row">
+          <h3 class="skills-group type-label">{g.name}</h3>
+          <ul class="skills-track">
+            {g.items.map((s) => (
+              <li class="skills-item">{s}</li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  /* z 10: above the block (z 5), so the rows can rise into the waiting strip. */
+  .skills {
+    position: relative;
+    z-index: 10;
+    min-height: 100svh;
+    display: grid;
+    align-content: center;
+  }
+  .skills-band {
+    background: var(--color-signal);
+    color: var(--color-ink);
+    padding: clamp(1.5rem, 3vw, 2.75rem) 0;
+    overflow: hidden;
+    display: grid;
+    gap: clamp(1rem, 1.8vw, 1.75rem);
+  }
+  .skills-heading,
+  .skills-group,
+  .skills-track {
+    padding: 0 1.25rem;
+  }
+  .skills-row {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .skills-group {
+    opacity: 0.85;
+  }
+  /* Static (reduced motion, no JS): a wrapped list, smaller, no separators,
+     so no line starts with a stray square. */
+  .skills-track {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.05em 0.6em;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: clamp(1.75rem, 3.6vw, 3.75rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+  }
+  /* With motion on, each row is one long line that slides, separated by the
+     pixel motif. */
+  :global(.motion) .skills-track {
+    flex-wrap: nowrap;
+    width: max-content;
+    gap: 0 0.45em;
+    font-size: clamp(2rem, 4.8vw, 5.25rem);
+    letter-spacing: -0.045em;
+  }
+  :global(.motion) .skills-item + .skills-item::before {
+    content: "";
+    display: inline-block;
+    width: 0.2em;
+    height: 0.2em;
+    margin-right: 0.45em;
+    vertical-align: 0.24em;
+    background: currentColor;
+  }
+  @media (min-width: 768px) {
+    .skills-heading,
+    .skills-group,
+    .skills-track {
+      padding: 0 2rem;
+    }
+  }
+</style>

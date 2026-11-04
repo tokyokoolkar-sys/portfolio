@@ -1,7 +1,9 @@
 ---
+import Arrow from "./Arrow.astro";
+
 /**
  * Scene 04: Work 01–04.
- * The block flies into the project frame and becomes it. On wide screens with
+ * The skills band folds into the project frame and becomes it. On wide screens with
  * motion on, the scene pins and the four projects play through one frame, with
  * giant ExtraBold numbers rolling 01 → 04. Everywhere else (phones, reduced
  * motion, no JS) the same content is a plain stacked list.
@@ -15,11 +17,13 @@ type Project = {
   meta: string;
   hook: string;
   role?: string;
+  aside?: string;
   points: string[];
   stack: string;
   links: { label: string; href: string }[];
   media:
     | { kind: "image"; src: string; alt: string; width: number; height: number }
+    | { kind: "video"; src: string; poster: string; tag: string; label: string }
     | { kind: "flow"; tone: "ink" | "cream"; tag: string; steps: Step[] }
     | { kind: "terminal"; tag: string; lines: { text: string; tone?: "dim" | "hot" | "cmd" }[] };
 };
@@ -62,17 +66,12 @@ const projects: Project[] = [
     stack: "Node · TypeScript · ACP · Claude Code plugins",
     links: [{ label: "Code", href: `${gh}/agent-relay` }],
     media: {
-      kind: "flow",
-      tone: "ink",
-      tag: "Screen recording coming soon",
-      steps: [
-        { n: "01", title: "Delegate", note: "Claude writes a self-contained brief" },
-        { n: "02", title: "Isolate", note: "Own worktree and branch per task" },
-        { n: "03", title: "Build", note: "OpenCode or Command Code, over ACP" },
-        { n: "04", title: "Ask", note: "Questions and permissions come back to Claude" },
-        { n: "05", title: "Review", note: "Claude reads the whole diff", accent: true },
-        { n: "06", title: "Merge", note: "One merge commit, easy to revert" },
-      ],
+      kind: "video",
+      src: "/video/agent-relay-demo.mp4",
+      poster: "/video/agent-relay-poster.webp",
+      tag: "Screen recording · 4 Nov 2026",
+      label:
+        "Screen recording: Claude Code splits a small CLI into two relay tasks, and OpenCode and Command Code pick them up in the Agents panel.",
     },
   },
   {
@@ -88,7 +87,8 @@ const projects: Project[] = [
       "Every AI claim cites the plant document it came from.",
     ],
     stack: "FastAPI · React · OR-Tools · RAG · SAP S/4HANA",
-    links: [{ label: "Code", href: `${gh}/Sokrates-test` }],
+    // The team repo (fadilaisy/Sokrates). Sokrates-test is the author's fork for fixes.
+    links: [{ label: "Code", href: "https://github.com/fadilaisy/Sokrates" }],
     media: {
       kind: "flow",
       tone: "cream",
@@ -115,6 +115,7 @@ const projects: Project[] = [
       "A stop removes all 73 liquidations, but the rule wins 17.5% of trades and needs 48.5% to break even.",
     ],
     stack: "Python · pandas · Binance public data",
+    aside: "Also on the research desk, code private: solana-wallet-research, in production, and EvenLighter, in design.",
     links: [{ label: "Code", href: `${gh}/BacktestEngine` }],
     media: {
       kind: "terminal",
@@ -142,8 +143,8 @@ const projects: Project[] = [
 ];
 ---
 
-<section id="work" class="work relative" aria-labelledby="work-heading">
-  <h2 id="work-heading" class="work-heading type-label">(03) Selected work</h2>
+<section id="work" class="work relative" data-jump="0.1" aria-labelledby="work-heading">
+  <h2 id="work-heading" class="work-heading type-label">Selected work</h2>
 
   <ol class="work-list">
     {
@@ -171,10 +172,13 @@ const projects: Project[] = [
               ))}
             </ul>
             <p class="work-stack type-label">{p.stack}</p>
+            {p.aside && <p class="work-aside">{p.aside}</p>}
             <p class="work-links">
               {p.links.map((l) => (
-                <a class="work-link type-label" href={l.href} target="_blank" rel="noopener">
-                  {l.label} <span aria-hidden="true">↗</span>
+                <a class="work-link type-label hit" href={l.href} target="_blank" rel="noopener">
+                  {l.label}
+                  <span class="sr-only">(opens in a new tab)</span>
+                  <Arrow />
                 </a>
               ))}
             </p>
@@ -189,9 +193,30 @@ const projects: Project[] = [
                   alt={p.media.alt}
                   width={p.media.width}
                   height={p.media.height}
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
                 />
+              )}
+
+              {p.media.kind === "video" && (
+                <div class="vid" data-relay-cam>
+                  <video
+                    src={p.media.src}
+                    poster={p.media.poster}
+                    width="2560"
+                    height="1440"
+                    muted
+                    loop
+                    playsinline
+                    controls
+                    preload="metadata"
+                    aria-label={p.media.label}
+                  />
+                  <p class="vid-tag type-label">{p.media.tag}</p>
+                  <button type="button" class="vid-toggle type-label hit" hidden>
+                    Pause video
+                  </button>
+                </div>
               )}
 
               {p.media.kind === "flow" && (
@@ -212,7 +237,7 @@ const projects: Project[] = [
               {p.media.kind === "terminal" && (
                 <div class="term">
                   <p class="flow-tag type-label">{p.media.tag}</p>
-                  <div class="term-body">
+                  <div class="term-body" tabindex="0" role="region" aria-label="Backtest scorecard, scrolls sideways on small screens">
                     {p.media.lines.map((l) => (
                       <span class:list={["term-line", l.tone && `term-line--${l.tone}`]}>{l.text || " "}</span>
                     ))}
@@ -285,7 +310,7 @@ const projects: Project[] = [
     margin-top: 0.9rem;
     padding-left: 0.9rem;
     border-left: 3px solid var(--color-signal);
-    font-size: 0.95rem;
+    font-size: 1rem;
     line-height: 1.45;
     max-width: 32rem;
   }
@@ -294,7 +319,7 @@ const projects: Project[] = [
     display: grid;
     gap: 0.45rem;
     max-width: 33rem;
-    font-size: 0.95rem;
+    font-size: 1rem;
     line-height: 1.45;
   }
   .work-points li {
@@ -314,6 +339,13 @@ const projects: Project[] = [
     margin-top: 1.25rem;
     opacity: 0.65;
   }
+  .work-aside {
+    margin-top: 1rem;
+    max-width: 33rem;
+    font-size: 1rem;
+    line-height: 1.45;
+    opacity: 0.75;
+  }
   .work-links {
     margin-top: 0.9rem;
     display: flex;
@@ -324,9 +356,13 @@ const projects: Project[] = [
     padding-bottom: 2px;
     transition: color 0.2s ease;
   }
-  .work-link:hover,
+  @media (hover: hover) {
+    .work-link:hover {
+      color: var(--color-signal-text);
+    }
+  }
   .work-link:focus-visible {
-    color: var(--color-signal);
+    color: var(--color-signal-text);
   }
 
   /* ── The frame: the block's other shape ─────────────────────── */
@@ -352,6 +388,52 @@ const projects: Project[] = [
     object-fit: cover;
   }
 
+  /* Screen recording: relayCam.ts zooms it onto the relay. */
+  .vid {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: var(--color-ink);
+  }
+  .vid video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    transform-origin: 0 0;
+  }
+  .vid-toggle {
+    position: absolute;
+    top: 3cqi;
+    right: 3cqi;
+    padding: 0.35em 0.6em;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    cursor: pointer;
+    pointer-events: auto;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .vid-toggle:hover {
+      color: var(--color-signal);
+    }
+  }
+
+  /* No camera (reduced motion, no JS): fill the frame, no black band. */
+  :global(html:not(.motion)) .vid video {
+    height: 100%;
+    object-fit: cover;
+  }
+  .vid-tag {
+    position: absolute;
+    top: 3cqi;
+    left: 3cqi;
+    padding: 0.35em 0.6em;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    pointer-events: none;
+  }
+
   /* Flow diagrams: a Swiss 3×2 grid of steps */
   .flow,
   .term {
@@ -371,7 +453,7 @@ const projects: Project[] = [
     color: var(--color-ink);
   }
   .flow-tag {
-    font-size: max(0.6rem, 1.5cqi);
+    font-size: max(0.75rem, 1.5cqi);
     opacity: 0.7;
     margin-bottom: auto;
   }
@@ -402,7 +484,7 @@ const projects: Project[] = [
   .flow-n {
     font-family: var(--font-head);
     font-weight: 500;
-    font-size: max(0.6rem, 1.5cqi);
+    font-size: max(0.75rem, 1.5cqi);
     letter-spacing: 0.06em;
   }
   .flow-title {
@@ -413,7 +495,7 @@ const projects: Project[] = [
     letter-spacing: -0.02em;
   }
   .flow-note {
-    font-size: max(0.7rem, 1.7cqi);
+    font-size: max(0.75rem, 1.7cqi);
     line-height: 1.3;
     opacity: 0.8;
   }
@@ -421,7 +503,8 @@ const projects: Project[] = [
   /* Terminal replay */
   .term-body {
     font-family: var(--font-mono);
-    font-size: max(0.5rem, 1.9cqi);
+    font-variant-numeric: tabular-nums;
+    font-size: max(0.75rem, 1.9cqi);
     line-height: 1.5;
     white-space: pre;
     overflow: hidden;
@@ -438,7 +521,6 @@ const projects: Project[] = [
   }
   .term-line--hot {
     color: var(--color-signal);
-    font-weight: 700;
   }
 
   /* ── Phones: a taller frame, so the step grid gets two roomy columns ── */
@@ -467,14 +549,15 @@ const projects: Project[] = [
       font-size: max(1rem, 5.5cqi);
     }
     .flow-note {
-      font-size: max(0.72rem, 3.4cqi);
+      font-size: max(0.75rem, 3.4cqi);
     }
     .flow-n,
     .flow-tag {
-      font-size: max(0.6rem, 2.8cqi);
+      font-size: max(0.75rem, 2.8cqi);
     }
     .term-body {
-      font-size: max(0.5rem, 2.55cqi);
+      font-size: max(0.75rem, 2.55cqi);
+      overflow-x: auto;
     }
   }
 
@@ -504,16 +587,25 @@ const projects: Project[] = [
   }
 
   /* ── The pinned take: all four projects share one stage ─────── */
+  /* The frame's box, worked out in CSS so the left column can line up with
+     it: the frame spans grid columns 6 to 12 (2rem side padding, 1.5rem gaps),
+     is capped by the screen height, keeps a 1.6 ratio and sits on the vertical
+     centre. --frame-top is its top edge. */
   .work.is-stage {
     height: 100lvh;
     padding: 0;
     overflow: hidden;
+    container-type: inline-size;
+    --frame-w: min(calc((100cqi - 4rem - 16.5rem) * 7 / 12 + 9rem), calc((100lvh - 16rem) * 1.6));
+    --frame-top: calc((100lvh - var(--frame-w) / 1.6) / 2);
   }
+  /* Level with the picture's top edge. */
   .work.is-stage .work-heading {
     position: absolute;
-    top: 5.5rem;
+    top: var(--frame-top);
     left: 2rem;
     margin: 0;
+    line-height: 1;
     z-index: 2;
   }
   .work.is-stage .work-list {
@@ -521,21 +613,30 @@ const projects: Project[] = [
     position: absolute;
     inset: 0;
   }
+  /* Every item has the same box (equal top and bottom padding) and the same
+     rows, so the frame lands on the same rect for all four projects and sits
+     on the screen's vertical centre. Long copy may run into the bottom padding
+     but never moves the frame. */
   .work.is-stage .work-item {
     position: absolute;
     inset: 0;
     /* items overlap: only the visible copy's links take clicks */
     pointer-events: none;
-    padding: 8rem 2rem 2.5rem;
-    align-content: start;
+    padding: 8rem 2rem;
+    grid-template-rows: auto minmax(0, 1fr);
+    align-content: stretch;
+  }
+  /* The number starts just under the heading, so the column's top lines up
+     with the picture's. Margin on a row the frame spans, so the frame stays put. */
+  .work.is-stage .work-num {
+    font-size: min(21svh, 11.5vw);
+    margin-top: calc(var(--frame-top) - 8rem + 1.75rem);
   }
   .work.is-stage .work-frame {
-    grid-row: 1 / span 2;
+    grid-row: 1 / -1;
     align-self: center;
-    /* keep the frame inside the stage on short screens */
-    max-height: calc(100lvh - 10.5rem);
     justify-self: end;
-    width: min(100%, calc((100lvh - 10.5rem) * 1.6));
+    width: var(--frame-w);
   }
   .work.is-stage .work-link {
     pointer-events: auto;

@@ -1,8 +1,10 @@
 ---
 /**
- * The block: the persistent orange square that carries the one-take.
- * It is born when the intro's orange field contracts, then stays on screen.
- * Later scenes move and reshape it. Hidden unless motion is on.
+ * The block: the orange shape that carries the one-take between scenes.
+ * It is born when the intro's field squeezes into the skills strip, folds into
+ * the Work frame, and leaves after Work. It never parks on screen. Its corner
+ * box here is only the reference that blockOver() scales from.
+ * Hidden unless motion is on.
  */
 ---
 
@@ -11,7 +13,9 @@
 <style>
   .stage-block {
     position: fixed;
-    z-index: 40;
+    /* Under positioned text (z 10), so copy scrolling past reads on top of the
+       orange instead of vanishing behind it. Still above plain page content. */
+    z-index: 5;
     right: 1.25rem;
     bottom: 1.25rem;
     width: clamp(2.75rem, 7vmin, 5.5rem);

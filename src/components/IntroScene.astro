@@ -2,15 +2,15 @@
 /**
  * Scene 03: Intro.
  * The dive lands on a full orange field. The headline rises, then the field
- * contracts into the block, which stays on screen for the rest of the take.
+ * squeezes into the skills band's strip, where the block takes it over.
  */
 ---
 
 <section id="about" class="intro-scene relative min-h-svh overflow-hidden" aria-labelledby="intro-heading">
   <div class="intro-field" aria-hidden="true"></div>
 
-  <div class="intro-content relative z-10 grid min-h-svh grid-cols-12 gap-x-5 px-5 pt-28 pb-10 md:px-8 md:pt-36">
-    <p class="intro-label type-label col-span-12 md:col-span-2">(02) About</p>
+  <div class="intro-content relative z-10 grid min-h-svh grid-cols-12 content-center gap-x-5 gap-y-6 px-5 py-24 md:px-8">
+    <p class="intro-label type-label col-span-12 md:col-span-2">About</p>
 
     <div class="col-span-12 md:col-span-9 md:col-start-3">
       <h2 id="intro-heading" class="intro-headline font-head font-bold">
@@ -34,8 +34,12 @@
 
 <style>
   /* Overlap the title by a few px so no cream sub-pixel seam shows at the hand-off. */
+  /* z-index: once the pin ends GSAP leaves a transform on this section, which
+     makes it a stacking context at z 0. Lift it so the headline stays above the
+     orange block (z 5) that waits as the skills strip. */
   .intro-scene {
     margin-top: -3px;
+    z-index: 10;
   }
   .intro-field {
     position: absolute;

@@ -9,10 +9,13 @@
   --color-cream: #f2ede4;
   --color-ink: #111111;
   --color-signal: #ff4f00;
+  /* Orange for text on cream: #ff4f00 is 2.8:1 there, this is 3.6:1 (large text). */
+  --color-signal-text: #e04400;
 
   --font-display: "Bodoni Moda Variable", "Bodoni Moda", Didot, "Times New Roman", serif;
   --font-head: "Inter Tight Variable", "Inter Tight", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Inter Variable", Inter, "Helvetica Neue", Arial, sans-serif;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -23,6 +26,12 @@
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* The page scrolls as one take: no scrollbar breaking the poster's edge.
+       Wheel, keys, touch and the index bar still move it. */
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
   }
 
   ::selection {
@@ -30,28 +39,77 @@
     color: var(--color-cream);
   }
 
+  /* The ring takes the text's own colour, which already contrasts with
+     whatever it sits on: ink on cream and orange, cream on ink. */
   :focus-visible {
-    outline: 2px solid var(--color-signal);
+    outline: 2px solid currentColor;
     outline-offset: 3px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p,
+  li {
+    text-wrap: pretty;
   }
 
   /* Elements the intro animates in. Hidden only while motion is on. */
   .motion .title-word {
     visibility: hidden;
   }
-  .motion .title-label {
-    opacity: 0;
-  }
 }
 
 @layer components {
-  /* Main headline: Bodoni Moda Black at its largest optical size. Display sizes only. */
+  /* Main headline: Bodoni Moda Black. Optical size 12, not the 96 maximum: at 96
+     the hairlines (the A's left leg and crossbar) drop under a pixel and the A
+     reads as a lone diagonal. Letter widths are the same at every optical size.
+     glyph.ts reads this value, so the dive measures the same shapes. */
   .type-display {
     font-family: var(--font-display);
     font-weight: 900;
-    font-variation-settings: "opsz" 96;
+    font-variation-settings: "opsz" 12;
     line-height: 0.8;
     letter-spacing: -0.02em;
+  }
+
+  /* A 44px hit area around small links, without changing how they look. */
+  .hit {
+    position: relative;
+  }
+  .hit::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+
+  /* Underline that draws in from the left on hover and focus. Transform only. */
+  .link-draw {
+    position: relative;
+  }
+  .link-draw::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 -2px 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 200ms var(--ease-out);
+  }
+  .link-draw:focus-visible::after {
+    transform: scaleX(1);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .link-draw:hover::after {
+      transform: scaleX(1);
+    }
   }
 
   /* Labels and dates: Inter Tight Medium. */
