@@ -44,6 +44,14 @@ const links = [
     mask-image: linear-gradient(to bottom, #000 calc(100% - 0.75rem), transparent);
   }
 
+  /* Over ink (the crawl, the Research desk). */
+  .index-bar {
+    transition: color 0.3s ease;
+  }
+  .index-bar.is-dark {
+    color: var(--color-cream);
+  }
+
   .index-link {
     background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1px;
     transition: background-size 0.3s ease;

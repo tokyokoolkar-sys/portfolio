@@ -1,0 +1,22 @@
+---
+/**
+ * The crawl from Work 04 into the Research desk (see crawl.ts): one fixed
+ * canvas, one pixel per 4px cell, scaled up with hard edges. Above the Work
+ * scene, under the index bar (z 50). Only drawn on wide screens with motion on.
+ */
+---
+
+<canvas class="crawl-layer" aria-hidden="true"></canvas>
+
+<style>
+  .crawl-layer {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 30;
+    image-rendering: pixelated;
+    pointer-events: none;
+    visibility: hidden;
+  }
+</style>

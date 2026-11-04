@@ -54,13 +54,19 @@ Agreed in the grilling session on 2026-11-04. This is the source of truth for sc
    3. **Sokrates / SkillForge.** AI SAP Hackathon, team Choco Munchacho. Role, in the user's words: *the problems that got past my teammates and their AI tools: the app layer, the architecture, and the bugs nobody else could crack.* Live demo: https://sokrates-sigma.vercel.app
    4. **BacktestEngine.** A terminal replay of a real scorecard run. Open a PR on that repo to fix the stale README and PLAN.
 
-   **Built (4 Nov 2026).** Wide screens: the skills strip folds onto the Work frame's rect and waits there as the block while Work scrolls up under it. All four projects share one frame box, and the "(04) Selected work" label and number column start level with the frame's top edge. The scene pins, and the four projects play through one frame with the numbers rolling 01 → 04. Then the block takes the frame back and shrinks away into its centre. It returns at Contact. Phones, reduced motion and no-JS get a stacked list.
+   **Built (4 Nov 2026).** Wide screens: the skills strip folds onto the Work frame's rect and waits there as the block while Work scrolls up under it. All four projects share one frame box, and the "(04) Selected work" label and number column start level with the frame's top edge. The scene pins, and the four projects play through one frame with the numbers rolling 01 → 04. Then Work 04 crawls into the Research desk (below). The block stays hidden from here and returns at Contact. Phones, reduced motion and no-JS get a stacked list.
    **Media status:**
    - HedgeHound uses its OG poster until the video is recorded.
    - agent-relay shows a six-step flow diagram until `agent-relay-demo.mp4` arrives.
    - SkillForge shows a flow diagram, because the live demo's backend is down. The "Live demo" link is hidden until it is back.
    - BacktestEngine replays a real run from 4 Nov 2026 (SYNUSDT, Dec 2025 to Jun 2026). The run needed a local fix: `run.py` reads `cache/klines.parquet`, but `data.py` writes `SYNUSDT-1m-klines.parquet`. Fold that fix into the planned PR.
-5. **Research desk** (label 05). Marked "code private".
+5. **Research desk** (label 05). Marked "code private". Cream text on ink, with the second headline line in orange.
+   **The crawl in (built 4 Nov 2026, wide screens only).** The last part of the Work pin (about 2.2 screens) crawls Work 04 away on one fixed canvas, driven only by scroll:
+   - The screen pixelates, chunkier each step (8 → 16 → 32 → 64 → 128 → 256 → 512 px): the portrait's pixel bite run backwards. Each step is a hard cut in random clustered spots.
+   - Black wins every block: a block holding anything black (the terminal, the giant 04, ink type) turns solid ink; only blocks with no black keep their averaged colour. Bigger blocks catch more black, so the ink takes the screen step by step until it is all ink.
+   - The index bar turns cream once the ink reaches it, and stays cream over Research.
+   - Research is tucked under the Work pin's last screen, so it reaches the top as the crawl ends, takes over from the ink and pins while its text rises through masks like About's.
+   Phones and reduced motion: a plain ink section with no crawl. Headline "What I measure / before I trust it." is draft copy.
    - **solana-wallet-research:** a terminal replay of the MCP tools plus a calibration chart.
    - **EvenLighter:** labelled "in design". Covers the ADRs, threat model and audit-log design.
 6. **Contact** (label 06). The block becomes the email button. ATAQAH returns small in the footer as a bookend. Colophon.

@@ -4,6 +4,7 @@ import { SplitText } from "gsap/SplitText";
 import Lenis from "lenis";
 import { pixelBite } from "./pixelBite";
 import { coverScale, measureStroke, offsetWithin } from "./glyph";
+import { createCrawl } from "./crawl";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 ScrollTrigger.config({ ignoreMobileResize: true });
@@ -314,10 +315,13 @@ function setupSkills(stage: boolean) {
  * folded into it), so the page simply arrives around it. When the scene pins,
  * the frame's own surface takes over the orange. Four projects play through
  * that one frame: media wipes up through the orange, the copy swaps, and the
- * giant number rolls to the next. At the end the block takes the frame back
- * and shrinks away into its centre. Phones get the stacked list with a simple
- * wipe per frame.
+ * giant number rolls to the next. Then Work 04 crawls into the ink of the
+ * Research desk. Phones get the stacked list with a simple wipe per frame.
  */
+/* Screens of scroll for the four projects, and for the crawl after them. */
+const WORK = 5.6;
+const CRAWL = 2.2;
+
 function setupWork(stage: boolean) {
   const section = $("#work");
   const block = $(".stage-block");
@@ -350,15 +354,18 @@ function setupWork(stage: boolean) {
     gsap.set(digits[k + 1], { yPercent: 120 });
   });
 
+  let crawlDark = false;
   const tl = gsap.timeline({
     defaults: { ease: "power3.inOut" },
     scrollTrigger: {
       trigger: section,
       start: "top top",
-      end: pinLength(5.6, 0),
+      end: pinLength(WORK + CRAWL, 0),
       pin: true,
       scrub: true,
       invalidateOnRefresh: true,
+      // The crawl's ink only counts for the index bar while this scene is pinned.
+      onToggle: (self) => darkBar("crawl", self.isActive && crawlDark),
     },
   });
 
@@ -373,30 +380,116 @@ function setupWork(stage: boolean) {
     }
     tl.to({}, { duration: 1.2 }); // hold: read it
 
+    // The last project stays up: the crawl eats it.
+    if (i === items.length - 1) return;
     const at = tl.duration();
     tl.to(media[i], { clipPath: "inset(0% 0% 100% 0%)", duration: 0.5 }, at);
-    if (i === items.length - 1) return;
     tl.to(copies[i], { autoAlpha: 0, y: -24, stagger: 0.02, duration: 0.3, ease: "power2.in" }, at)
       .to(digits[i], { yPercent: -120, stagger: 0.06, duration: 0.45, ease: "power3.in" }, at)
       .to(digits[i + 1], { yPercent: 0, stagger: 0.06, duration: 0.5, ease: "power3.out" }, at + 0.4)
       .to(copies[i + 1], { autoAlpha: 1, y: 0, stagger: 0.04, duration: 0.45, ease: "power3.out" }, at + 0.5);
   });
 
-  // Hand the frame back to the block, which shrinks away into its centre.
-  // It comes back at Contact.
-  const over = () => blockOver(workFrameRect());
-  const gone = () => {
-    const r = workFrameRect();
-    return blockOver({ x: r.x + r.w / 2, y: r.y + r.h / 2, w: 0, h: 0 });
+  // Work 04 crawls into the Research desk's ink: the screen pixelates chunkier
+  // each step and black wins every block, until it is all ink (crawl.ts). Same
+  // scroll per unit as the projects above, so the pin grows by the crawl's share.
+  const canvas = $<HTMLCanvasElement>(".crawl-layer");
+  const crawl = createCrawl(canvas, {
+    scene: () => [$(".work-heading"), ...surfaces, items[items.length - 1]],
+    onDark: (dark) => {
+      crawlDark = dark;
+      darkBar("crawl", dark && !!tl.scrollTrigger?.isActive);
+    },
+  });
+  // Draw on the next frame, never inside the timeline's own render: GSAP writes
+  // some tweens lazily, so mid-render the redraw would catch Work half-updated.
+  const proxy = { p: 0 };
+  let queued = false;
+  const paint = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => {
+      queued = false;
+      crawl.draw(proxy.p);
+    });
   };
-  tl.set(block, { autoAlpha: 1 })
-    .set(surfaces, { visibility: "hidden" })
-    .fromTo(
-      block,
-      { x: () => over().x, y: () => over().y, scaleX: () => over().scaleX, scaleY: () => over().scaleY },
-      { x: () => gone().x, y: () => gone().y, scaleX: 0, scaleY: 0, duration: 0.7, ease: "power2.inOut" },
-    )
-    .set(block, { autoAlpha: 0 });
+  ScrollTrigger.addEventListener("refreshInit", crawl.invalidate);
+  ScrollTrigger.addEventListener("refresh", () => {
+    crawl.invalidate();
+    paint();
+  });
+  tl.fromTo(proxy, { p: 0 }, { p: 1, ease: "none", duration: tl.duration() * (CRAWL / WORK), onUpdate: paint });
+}
+
+/* The index bar's text turns cream over ink. Two things can ask for it (the
+ * crawl and the Research scene), so it stays dark while either does. */
+const darkFor = new Set<string>();
+function darkBar(who: string, dark: boolean) {
+  if (dark) darkFor.add(who);
+  else darkFor.delete(who);
+  document.querySelector(".index-bar")?.classList.toggle("is-dark", darkFor.size > 0);
+}
+function watchDark() {
+  // When Research is pinned, measure its pin wrapper, which includes the pin's scroll.
+  const research = $("#research");
+  const wrap = research.parentElement;
+  ScrollTrigger.create({
+    trigger: wrap?.classList.contains("pin-spacer") ? wrap : research,
+    start: "top 60px",
+    end: "bottom 60px",
+    onToggle: (self) => darkBar("research", self.isActive),
+  });
+}
+
+/* ── Scene 05: Research desk ─────────────────────────────────────
+ * Wide screens: the section is tucked under the Work pin's last screen, so it
+ * reaches the top the moment the crawl ends on full ink. It rises hidden
+ * (the half-eaten Work screen stays in view), then takes over from the
+ * crawl's ink, which matches its own, and pins while its text rises through
+ * masks like About's.
+ * Elsewhere: a plain ink section whose text rises as it arrives.
+ */
+function setupResearch(stage: boolean) {
+  const section = $("#research");
+  const lines = SplitText.create([".research-label", ".research-line", ".research-note"], {
+    type: "lines",
+    mask: "lines",
+  }).lines;
+
+  if (!stage) {
+    gsap.from(lines, {
+      yPercent: 105,
+      stagger: 0.08,
+      duration: 0.9,
+      ease: "power3.out",
+      scrollTrigger: { trigger: section, start: "top 70%", once: true },
+    });
+    return;
+  }
+
+  const work = $("#work");
+  const tuck = () => {
+    section.style.marginTop = `${-work.offsetHeight}px`;
+  };
+  tuck();
+  ScrollTrigger.addEventListener("refreshInit", tuck);
+
+  gsap.set(section, { autoAlpha: 0 });
+  gsap
+    .timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "top top",
+        end: pinLength(1.4, 0),
+        pin: true,
+        scrub: true,
+        invalidateOnRefresh: true,
+      },
+    })
+    .set(section, { autoAlpha: 1 }, 0.01)
+    .set(".crawl-layer", { opacity: 0 }, 0.01)
+    .from(lines, { yPercent: 105, stagger: 0.1, duration: 0.5, ease: "power3.out" }, 0.05)
+    .to({}, { duration: 0.4 });
 }
 
 /* ── Boot ────────────────────────────────────────────────────────── */
@@ -417,7 +510,10 @@ async function boot() {
   setupIntro(bandRect);
   setupSkills(stage);
   setupWork(stage);
+  setupResearch(stage);
+  watchDark();
   ScrollTrigger.refresh();
 }
 
 if (motion) void boot();
+else watchDark();

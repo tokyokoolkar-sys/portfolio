@@ -1,0 +1,61 @@
+---
+/**
+ * Scene 05: Research desk, on ink.
+ * On wide screens Work 04 crawls into this ink (see crawl.ts): random spots
+ * pixelate, then the dark grows out of the BacktestEngine terminal. The scene
+ * pins and its headline rises through masks, like About's.
+ * Shell only for now: the projects (solana-wallet-research's MCP replay and
+ * calibration chart, EvenLighter in design) come next. Headline is draft copy.
+ */
+---
+
+<section id="research" class="research" aria-labelledby="research-heading">
+  <div class="research-inner">
+    <p class="research-label type-label">(05) Research desk · Code private</p>
+    <h2 id="research-heading" class="research-headline font-head font-bold">
+      <span class="research-line">What I measure</span>
+      <span class="research-line research-line--hot">before I trust it.</span>
+    </h2>
+    <p class="research-note type-label">solana-wallet-research · EvenLighter, in design · In production</p>
+  </div>
+</section>
+
+<style>
+  .research {
+    position: relative;
+    /* Under the crawl layer (z 30), so it can rise unseen beneath the finished
+       ink before taking over. */
+    z-index: 10;
+    min-height: 100svh;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    display: grid;
+    align-content: center;
+    padding: 6rem 1.25rem;
+  }
+  .research-headline {
+    margin-top: 1.25rem;
+    font-size: clamp(2.6rem, 6.4vw, 7.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+  }
+  .research-line {
+    display: block;
+  }
+  .research-line--hot {
+    color: var(--color-signal);
+  }
+  .research-note {
+    margin-top: 2rem;
+    opacity: 0.6;
+  }
+  @media (min-width: 768px) {
+    .research {
+      padding: 6rem 2rem;
+    }
+    /* Starts on grid column 3, like About's headline (12 columns, 1.25rem gaps). */
+    .research-inner {
+      margin-left: calc((100% - 11 * 1.25rem) / 6 + 2.5rem);
+    }
+  }
+</style>
