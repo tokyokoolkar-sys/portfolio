@@ -33,9 +33,21 @@
     color: var(--color-cream);
   }
 
+  /* The ring takes the text's own colour, which already contrasts with
+     whatever it sits on: ink on cream and orange, cream on ink. */
   :focus-visible {
-    outline: 2px solid var(--color-signal);
+    outline: 2px solid currentColor;
     outline-offset: 3px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p,
+  li {
+    text-wrap: pretty;
   }
 
   /* Elements the intro animates in. Hidden only while motion is on. */
@@ -55,6 +67,20 @@
     font-variation-settings: "opsz" 12;
     line-height: 0.8;
     letter-spacing: -0.02em;
+  }
+
+  /* A 44px hit area around small links, without changing how they look. */
+  .hit {
+    position: relative;
+  }
+  .hit::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
   }
 
   /* Underline that draws in from the left on hover and focus. Transform only. */

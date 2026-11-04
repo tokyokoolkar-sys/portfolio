@@ -128,10 +128,11 @@
       text-align: left;
       padding-inline-start: 2vw;
     }
-    /* The portrait covers the H, but its left stem always shows: about 0.3em
-       of it. The cut-out's head starts 22.6% into the portrait (width 0.563 of
-       the screen height), and the H starts 3.51em into the word, so
-       2vw + 3.81em = 100vw - 0.436lvh gives 25.7vw - 11.4lvh. Below 12vw
+    /* The H peeks past the portrait by the same amount at every wide screen.
+       Measured in Bodoni Moda Black: the H starts 3.91em into the 4.74em
+       word; the cut-out's head starts 22.6% into the portrait (0.563 of the
+       screen height wide). The size keeps the head 0.1em over the H's left
+       edge, so the H shows above and beside the hair. Below 12vw
        (near-square screens) the word stays readable and the H hides. */
     .title-word {
       font-size: min(20vw, 40svh, max(12vw, calc(25.7vw - 11.4lvh)));

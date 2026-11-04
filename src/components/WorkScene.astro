@@ -1,4 +1,6 @@
 ---
+import Arrow from "./Arrow.astro";
+
 /**
  * Scene 04: Work 01–04.
  * The skills band folds into the project frame and becomes it. On wide screens with
@@ -21,6 +23,7 @@ type Project = {
   links: { label: string; href: string }[];
   media:
     | { kind: "image"; src: string; alt: string; width: number; height: number }
+    | { kind: "video"; src: string; poster: string; tag: string; label: string }
     | { kind: "flow"; tone: "ink" | "cream"; tag: string; steps: Step[] }
     | { kind: "terminal"; tag: string; lines: { text: string; tone?: "dim" | "hot" | "cmd" }[] };
 };
@@ -63,17 +66,12 @@ const projects: Project[] = [
     stack: "Node · TypeScript · ACP · Claude Code plugins",
     links: [{ label: "Code", href: `${gh}/agent-relay` }],
     media: {
-      kind: "flow",
-      tone: "ink",
-      tag: "Screen recording coming soon",
-      steps: [
-        { n: "01", title: "Delegate", note: "Claude writes a self-contained brief" },
-        { n: "02", title: "Isolate", note: "Own worktree and branch per task" },
-        { n: "03", title: "Build", note: "OpenCode or Command Code, over ACP" },
-        { n: "04", title: "Ask", note: "Questions and permissions come back to Claude" },
-        { n: "05", title: "Review", note: "Claude reads the whole diff", accent: true },
-        { n: "06", title: "Merge", note: "One merge commit, easy to revert" },
-      ],
+      kind: "video",
+      src: "/video/agent-relay-demo.mp4",
+      poster: "/video/agent-relay-poster.webp",
+      tag: "Screen recording · 4 Nov 2026",
+      label:
+        "Screen recording: Claude Code splits a small CLI into two relay tasks, and OpenCode and Command Code pick them up in the Agents panel.",
     },
   },
   {
@@ -176,8 +174,10 @@ const projects: Project[] = [
             {p.aside && <p class="work-aside">{p.aside}</p>}
             <p class="work-links">
               {p.links.map((l) => (
-                <a class="work-link type-label" href={l.href} target="_blank" rel="noopener">
-                  {l.label} <span aria-hidden="true">↗</span>
+                <a class="work-link type-label hit" href={l.href} target="_blank" rel="noopener">
+                  {l.label}
+                  <span class="sr-only">(opens in a new tab)</span>
+                  <Arrow />
                 </a>
               ))}
             </p>
@@ -195,6 +195,24 @@ const projects: Project[] = [
                   loading="eager"
                   decoding="async"
                 />
+              )}
+
+              {p.media.kind === "video" && (
+                <div class="vid" data-relay-cam>
+                  <video
+                    src={p.media.src}
+                    poster={p.media.poster}
+                    width="2560"
+                    height="1440"
+                    muted
+                    loop
+                    playsinline
+                    controls
+                    preload="metadata"
+                    aria-label={p.media.label}
+                  />
+                  <p class="vid-tag type-label">{p.media.tag}</p>
+                </div>
               )}
 
               {p.media.kind === "flow" && (
@@ -366,6 +384,36 @@ const projects: Project[] = [
     object-fit: cover;
   }
 
+  /* Screen recording: relayCam.ts zooms it onto the relay. */
+  .vid {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: var(--color-ink);
+  }
+  .vid video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    transform-origin: 0 0;
+  }
+  /* No camera (reduced motion, no JS): fill the frame, no black band. */
+  :global(html:not(.motion)) .vid video {
+    height: 100%;
+    object-fit: cover;
+  }
+  .vid-tag {
+    position: absolute;
+    top: 3cqi;
+    left: 3cqi;
+    padding: 0.35em 0.6em;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    pointer-events: none;
+  }
+
   /* Flow diagrams: a Swiss 3×2 grid of steps */
   .flow,
   .term {
@@ -453,7 +501,6 @@ const projects: Project[] = [
   }
   .term-line--hot {
     color: var(--color-signal);
-    font-weight: 700;
   }
 
   /* ── Phones: a taller frame, so the step grid gets two roomy columns ── */

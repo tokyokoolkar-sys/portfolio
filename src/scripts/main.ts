@@ -5,6 +5,7 @@ import Lenis from "lenis";
 import { pixelBite } from "./pixelBite";
 import { coverScale, measureStroke, offsetWithin } from "./glyph";
 import { createCrawl } from "./crawl";
+import { relayCam } from "./relayCam";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 ScrollTrigger.config({ ignoreMobileResize: true });
@@ -349,6 +350,16 @@ function setupWork(stage: boolean) {
     return;
   }
 
+  // Work arrives with the block: the section is tucked under the Toolbox
+  // pin's last screen, so the "Selected work" label and the 01 rise while the
+  // strip folds into the frame, and Work pins the moment the fold lands.
+  const toolbox = $("#toolbox");
+  const tuck = () => {
+    section.style.marginTop = `${-toolbox.offsetHeight}px`;
+  };
+  tuck();
+  ScrollTrigger.addEventListener("refreshInit", tuck);
+
   // One surface only: the first item's. Every media layer paints above it.
   const surfaces = pick(items[0], ".work-frame-bg");
   const copies = items.map((i) => pick(i, ".work-copy > *"));
@@ -551,6 +562,7 @@ async function boot() {
   setupSkills(stage);
   setupWork(stage);
   setupContact(stage);
+  document.querySelectorAll<HTMLElement>("[data-relay-cam]").forEach(relayCam);
   watchDark();
   ScrollTrigger.refresh();
 }

@@ -7,6 +7,8 @@
  * Reduced motion and no JS: everything shown, the button already orange.
  * Headline is draft copy.
  */
+import Arrow from "./Arrow.astro";
+
 const email = "ataqah.ramadhan@gmail.com";
 const links = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/ataramadhan" },
@@ -27,7 +29,7 @@ const links = [
         <span class="contact-email-fill" aria-hidden="true"></span>
         <span class="contact-email-text">{email}</span>
       </a>
-      <button type="button" class="contact-copy type-label" data-email={email} hidden>
+      <button type="button" class="contact-copy type-label hit" data-email={email} hidden>
         <span class="contact-copy-label">Copy</span>
       </button>
     </div>
@@ -36,8 +38,10 @@ const links = [
       {
         links.map((l) => (
           <li>
-            <a class="contact-link type-label link-draw" href={l.href} target="_blank" rel="noopener">
-              {l.label} ↗
+            <a class="contact-link type-label link-draw hit" href={l.href} target="_blank" rel="noopener">
+              {l.label}
+              <span class="sr-only">(opens in a new tab)</span>
+              <Arrow />
             </a>
           </li>
         ))
@@ -131,6 +135,12 @@ const links = [
   .contact-email-text {
     position: relative;
     display: block;
+  }
+  /* SplitText's line mask clips at line-height 1, which cuts the q and g
+     tails. Give the mask room below and take it back with a margin. */
+  .contact-email-text > :global(*) {
+    padding-bottom: 0.2em;
+    margin-bottom: -0.2em;
   }
   .contact-email:focus-visible .contact-email-fill {
     background: var(--color-cream);
