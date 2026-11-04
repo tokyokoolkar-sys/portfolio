@@ -15,6 +15,7 @@ type Project = {
   meta: string;
   hook: string;
   role?: string;
+  aside?: string;
   points: string[];
   stack: string;
   links: { label: string; href: string }[];
@@ -115,6 +116,7 @@ const projects: Project[] = [
       "A stop removes all 73 liquidations, but the rule wins 17.5% of trades and needs 48.5% to break even.",
     ],
     stack: "Python · pandas · Binance public data",
+    aside: "Also on the research desk, code private: solana-wallet-research, in production, and EvenLighter, in design.",
     links: [{ label: "Code", href: `${gh}/BacktestEngine` }],
     media: {
       kind: "terminal",
@@ -143,7 +145,7 @@ const projects: Project[] = [
 ---
 
 <section id="work" class="work relative" aria-labelledby="work-heading">
-  <h2 id="work-heading" class="work-heading type-label">(04) Selected work</h2>
+  <h2 id="work-heading" class="work-heading type-label">Selected work</h2>
 
   <ol class="work-list">
     {
@@ -171,6 +173,7 @@ const projects: Project[] = [
               ))}
             </ul>
             <p class="work-stack type-label">{p.stack}</p>
+            {p.aside && <p class="work-aside">{p.aside}</p>}
             <p class="work-links">
               {p.links.map((l) => (
                 <a class="work-link type-label" href={l.href} target="_blank" rel="noopener">
@@ -189,7 +192,7 @@ const projects: Project[] = [
                   alt={p.media.alt}
                   width={p.media.width}
                   height={p.media.height}
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
                 />
               )}
@@ -212,7 +215,7 @@ const projects: Project[] = [
               {p.media.kind === "terminal" && (
                 <div class="term">
                   <p class="flow-tag type-label">{p.media.tag}</p>
-                  <div class="term-body">
+                  <div class="term-body" tabindex="0" role="region" aria-label="Backtest scorecard, scrolls sideways on small screens">
                     {p.media.lines.map((l) => (
                       <span class:list={["term-line", l.tone && `term-line--${l.tone}`]}>{l.text || " "}</span>
                     ))}
@@ -285,7 +288,7 @@ const projects: Project[] = [
     margin-top: 0.9rem;
     padding-left: 0.9rem;
     border-left: 3px solid var(--color-signal);
-    font-size: 0.95rem;
+    font-size: 1rem;
     line-height: 1.45;
     max-width: 32rem;
   }
@@ -294,7 +297,7 @@ const projects: Project[] = [
     display: grid;
     gap: 0.45rem;
     max-width: 33rem;
-    font-size: 0.95rem;
+    font-size: 1rem;
     line-height: 1.45;
   }
   .work-points li {
@@ -314,6 +317,13 @@ const projects: Project[] = [
     margin-top: 1.25rem;
     opacity: 0.65;
   }
+  .work-aside {
+    margin-top: 1rem;
+    max-width: 33rem;
+    font-size: 1rem;
+    line-height: 1.45;
+    opacity: 0.75;
+  }
   .work-links {
     margin-top: 0.9rem;
     display: flex;
@@ -324,9 +334,13 @@ const projects: Project[] = [
     padding-bottom: 2px;
     transition: color 0.2s ease;
   }
-  .work-link:hover,
+  @media (hover: hover) {
+    .work-link:hover {
+      color: var(--color-signal-text);
+    }
+  }
   .work-link:focus-visible {
-    color: var(--color-signal);
+    color: var(--color-signal-text);
   }
 
   /* ── The frame: the block's other shape ─────────────────────── */
@@ -371,7 +385,7 @@ const projects: Project[] = [
     color: var(--color-ink);
   }
   .flow-tag {
-    font-size: max(0.6rem, 1.5cqi);
+    font-size: max(0.75rem, 1.5cqi);
     opacity: 0.7;
     margin-bottom: auto;
   }
@@ -402,7 +416,7 @@ const projects: Project[] = [
   .flow-n {
     font-family: var(--font-head);
     font-weight: 500;
-    font-size: max(0.6rem, 1.5cqi);
+    font-size: max(0.75rem, 1.5cqi);
     letter-spacing: 0.06em;
   }
   .flow-title {
@@ -413,7 +427,7 @@ const projects: Project[] = [
     letter-spacing: -0.02em;
   }
   .flow-note {
-    font-size: max(0.7rem, 1.7cqi);
+    font-size: max(0.75rem, 1.7cqi);
     line-height: 1.3;
     opacity: 0.8;
   }
@@ -421,7 +435,8 @@ const projects: Project[] = [
   /* Terminal replay */
   .term-body {
     font-family: var(--font-mono);
-    font-size: max(0.5rem, 1.9cqi);
+    font-variant-numeric: tabular-nums;
+    font-size: max(0.75rem, 1.9cqi);
     line-height: 1.5;
     white-space: pre;
     overflow: hidden;
@@ -467,14 +482,15 @@ const projects: Project[] = [
       font-size: max(1rem, 5.5cqi);
     }
     .flow-note {
-      font-size: max(0.72rem, 3.4cqi);
+      font-size: max(0.75rem, 3.4cqi);
     }
     .flow-n,
     .flow-tag {
-      font-size: max(0.6rem, 2.8cqi);
+      font-size: max(0.75rem, 2.8cqi);
     }
     .term-body {
-      font-size: max(0.5rem, 2.55cqi);
+      font-size: max(0.75rem, 2.55cqi);
+      overflow-x: auto;
     }
   }
 

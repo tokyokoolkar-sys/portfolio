@@ -1,5 +1,5 @@
 /**
- * The Work 04 → Research crawl: black wins the pixels. Everything is a
+ * The Work 04 → Contact crawl: black wins the pixels. Everything is a
  * function of `progress`, which the scroll drives; there is no clock, so
  * nothing moves while the page is still.
  *
@@ -9,7 +9,7 @@
  * number, ink type) turns solid ink, and only blocks with no black keep their
  * averaged colour. The bigger the blocks, the more of them catch some black,
  * so the ink takes the screen step by step until all of it is ink, for the
- * Research scene to take over. Each step is a hard cut that lands in random
+ * Contact scene to take over. Each step is a hard cut that lands in random
  * clustered spots, a few blocks at a time.
  *
  * Canvas can't read the DOM, so the screen comes from a rough redraw:

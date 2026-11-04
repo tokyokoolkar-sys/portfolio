@@ -12,7 +12,7 @@
   <div class="title-stage">
     <h1 id="title-heading" class="title-name">
       <span class="sr-only">Ataqah Ramadhan, design engineer</span>
-      <span class="title-word type-display text-signal" aria-hidden="true">ATAQAH</span>
+      <span class="title-word type-display text-signal-text" aria-hidden="true">ATAQAH</span>
     </h1>
 
     <div class="portrait">
@@ -116,8 +116,13 @@
       text-align: left;
       padding-inline-start: 2vw;
     }
+    /* The portrait covers the H, but its left stem always shows: about 0.3em
+       of it. The cut-out's head starts 22.6% into the portrait (width 0.563 of
+       the screen height), and the H starts 3.51em into the word, so
+       2vw + 3.81em = 100vw - 0.436lvh gives 25.7vw - 11.4lvh. Below 12vw
+       (near-square screens) the word stays readable and the H hides. */
     .title-word {
-      font-size: min(20vw, 40svh);
+      font-size: min(20vw, 40svh, max(12vw, calc(25.7vw - 11.4lvh)));
     }
     .portrait {
       left: auto;

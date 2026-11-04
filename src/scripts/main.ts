@@ -101,20 +101,22 @@ function setupDive(glyph: HTMLElement) {
   layout();
   ScrollTrigger.addEventListener("refreshInit", layout);
 
-  gsap.to(stage, {
-    x: () => geo.dx,
-    y: () => geo.dy,
-    scale: () => geo.scale,
-    ease: "power3.in",
-    scrollTrigger: {
-      trigger: section,
-      start: "top top",
-      end: pinLength(1.6, 1.1),
-      pin: true,
-      scrub: true,
-      invalidateOnRefresh: true,
-    },
-  });
+  gsap
+    .timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "top top",
+        end: pinLength(1.6, 1.1),
+        pin: true,
+        scrub: true,
+        invalidateOnRefresh: true,
+      },
+    })
+    .to(stage, { x: () => geo.dx, y: () => geo.dy, scale: () => geo.scale, ease: "power3.in", duration: 1 }, 0)
+    // The name is set in the darker text orange (contrast on cream). As the
+    // camera pushes in it warms to the field's orange, so the A's ink and the
+    // About field it hands off to are one colour. One element, one property.
+    .to(".title-word", { color: getComputedStyle(document.documentElement).getPropertyValue("--color-signal").trim(), ease: "none", duration: 0.6 }, 0.2);
 }
 
 /* The block's resting box in viewport px. Layout values, so the block's own
@@ -201,7 +203,7 @@ function setupIntro(target: () => Rect) {
     .fromTo(
       lines,
       { yPercent: 0 },
-      { yPercent: -140, stagger: 0.06, duration: 0.35, ease: "power2.in", immediateRender: false },
+      { yPercent: -170, stagger: 0.06, duration: 0.35, ease: "power2.in", immediateRender: false },
     )
     .fromTo(
       [".intro-label", ".intro-body p"],
@@ -315,8 +317,7 @@ function setupSkills(stage: boolean) {
  * folded into it), so the page simply arrives around it. When the scene pins,
  * the frame's own surface takes over the orange. Four projects play through
  * that one frame: media wipes up through the orange, the copy swaps, and the
- * giant number rolls to the next. Then Work 04 crawls into the ink of the
- * Research desk. Phones get the stacked list with a simple wipe per frame.
+ * giant number rolls to the next. Then Work 04 crawls into Contact's ink. Phones get the stacked list with a simple wipe per frame.
  */
 /* Screens of scroll for the four projects, and for the crawl after them. */
 const WORK = 5.6;
@@ -390,7 +391,7 @@ function setupWork(stage: boolean) {
       .to(copies[i + 1], { autoAlpha: 1, y: 0, stagger: 0.04, duration: 0.45, ease: "power3.out" }, at + 0.5);
   });
 
-  // Work 04 crawls into the Research desk's ink: the screen pixelates chunkier
+  // Work 04 crawls into Contact's ink: the screen pixelates chunkier
   // each step and black wins every block, until it is all ink (crawl.ts). Same
   // scroll per unit as the projects above, so the pin grows by the crawl's share.
   const canvas = $<HTMLCanvasElement>(".crawl-layer");
@@ -422,7 +423,7 @@ function setupWork(stage: boolean) {
 }
 
 /* The index bar's text turns cream over ink. Two things can ask for it (the
- * crawl and the Research scene), so it stays dark while either does. */
+ * crawl and the Contact scene), so it stays dark while either does. */
 const darkFor = new Set<string>();
 function darkBar(who: string, dark: boolean) {
   if (dark) darkFor.add(who);
@@ -430,9 +431,9 @@ function darkBar(who: string, dark: boolean) {
   document.querySelector(".index-bar")?.classList.toggle("is-dark", darkFor.size > 0);
 }
 function watchDark() {
-  // Research and Contact are both on ink. A pinned section is measured by its
-  // pin wrapper, which includes the pin's scroll.
-  for (const id of ["research", "contact"]) {
+  // Contact is on ink. A pinned section is measured by its pin wrapper, which
+  // includes the pin's scroll.
+  for (const id of ["contact"]) {
     const el = $(`#${id}`);
     const wrap = el.parentElement;
     ScrollTrigger.create({
@@ -444,65 +445,17 @@ function watchDark() {
   }
 }
 
-/* ── Scene 05: Research desk ─────────────────────────────────────
- * Wide screens: the section is tucked under the Work pin's last screen, so it
- * reaches the top the moment the crawl ends on full ink. It rises hidden
- * (the half-eaten Work screen stays in view), then takes over from the
- * crawl's ink, which matches its own, and pins while its text rises through
- * masks like About's.
- * Elsewhere: a plain ink section whose text rises as it arrives.
- */
-function setupResearch(stage: boolean) {
-  const section = $("#research");
-  const lines = SplitText.create([".research-label", ".research-line", ".research-note"], {
-    type: "lines",
-    mask: "lines",
-  }).lines;
-
-  if (!stage) {
-    gsap.from(lines, {
-      yPercent: 105,
-      stagger: 0.08,
-      duration: 0.9,
-      ease: "power3.out",
-      scrollTrigger: { trigger: section, start: "top 70%", once: true },
-    });
-    return;
-  }
-
-  const work = $("#work");
-  const tuck = () => {
-    section.style.marginTop = `${-work.offsetHeight}px`;
-  };
-  tuck();
-  ScrollTrigger.addEventListener("refreshInit", tuck);
-
-  gsap.set(section, { autoAlpha: 0 });
-  gsap
-    .timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: "top top",
-        end: pinLength(1.4, 0),
-        pin: true,
-        scrub: true,
-        invalidateOnRefresh: true,
-      },
-    })
-    .set(section, { autoAlpha: 1 }, 0.01)
-    .set(".crawl-layer", { opacity: 0 }, 0.01)
-    .from(lines, { yPercent: 105, stagger: 0.1, duration: 0.5, ease: "power3.out" }, 0.05)
-    .to({}, { duration: 0.4 });
-}
-
-/* ── Scene 06: Contact ──────────────────────────────────────────
- * Still on ink. As the section arrives, its headline rises like the others'.
+/* ── Scene 05: Contact ──────────────────────────────────────────
+ * On ink. Wide screens: the section is tucked under the Work pin's last
+ * screen, so it reaches the top the moment the crawl ends on full ink. It
+ * rises hidden, takes over from the crawl's matching ink, and its headline
+ * rises inside the pin. Elsewhere it rises as the section scrolls in.
  * Then it pins and the block comes back one last time: a single orange pixel
  * in the button's centre that doubles in hard steps (a square up to the
  * button's height, then wider) until it is the email button. The address
  * rises into it, the links follow, and ATAQAH rises at the foot of the page.
  */
-function setupContact() {
+function setupContact(stage: boolean) {
   const button = $(".contact-email");
   const fill = $(".contact-email-fill");
   const lines = SplitText.create([".contact-label", ".contact-line"], { type: "lines", mask: "lines" }).lines;
@@ -524,23 +477,42 @@ function setupContact() {
 
   gsap.set(fill, { clipPath: "inset(50% 50% 50% 50%)" });
 
-  // The headline rises while the section scrolls in...
-  gsap
-    .timeline({ scrollTrigger: { trigger: "#contact", start: "top 80%", end: "top top", scrub: true } })
-    .from(lines, { yPercent: 105, stagger: 0.12, ease: "power3.out" }, 0.3);
+  const section = $("#contact");
+  if (stage) {
+    const work = $("#work");
+    const tuck = () => {
+      section.style.marginTop = `${-work.offsetHeight}px`;
+    };
+    tuck();
+    ScrollTrigger.addEventListener("refreshInit", tuck);
+    gsap.set(section, { autoAlpha: 0 });
+  } else {
+    // The headline rises while the section scrolls in...
+    gsap
+      .timeline({ scrollTrigger: { trigger: section, start: "top 80%", end: "top top", scrub: true } })
+      .from(lines, { yPercent: 105, stagger: 0.12, ease: "power3.out" }, 0.3);
+  }
 
   // ...then the section pins, so the pixel grows where you can see it.
   const tl = gsap.timeline({
     scrollTrigger: {
       trigger: "#contact",
       start: "top top",
-      end: pinLength(1.4, 1),
+      end: pinLength(stage ? 2 : 1.4, 1),
       pin: true,
       scrub: true,
       invalidateOnRefresh: true,
     },
   });
-  for (let i = 0; i <= STEPS; i++) tl.set(fill, { clipPath: () => inset(i) }, 0.05 + i * 0.1);
+  let at = 0.05;
+  if (stage) {
+    // Take over from the crawl's ink, then the headline rises inside the pin.
+    tl.set(section, { autoAlpha: 1 }, 0.01)
+      .set(".crawl-layer", { opacity: 0 }, 0.01)
+      .from(lines, { yPercent: 105, stagger: 0.1, duration: 0.5, ease: "power3.out" }, 0.05);
+    at = 0.6;
+  }
+  for (let i = 0; i <= STEPS; i++) tl.set(fill, { clipPath: () => inset(i) }, at + i * 0.1);
   tl.from(address, { yPercent: 105, duration: 0.25, ease: "power3.out" }, ">+0.05")
     .from(
       [".contact-copy", ".contact-links", ".contact-where"],
@@ -571,8 +543,7 @@ async function boot() {
   setupIntro(bandRect);
   setupSkills(stage);
   setupWork(stage);
-  setupResearch(stage);
-  setupContact();
+  setupContact(stage);
   watchDark();
   ScrollTrigger.refresh();
 }

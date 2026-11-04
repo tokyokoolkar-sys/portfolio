@@ -9,6 +9,8 @@
   --color-cream: #f2ede4;
   --color-ink: #111111;
   --color-signal: #ff4f00;
+  /* Orange for text on cream: #ff4f00 is 2.8:1 there, this is 3.6:1 (large text). */
+  --color-signal-text: #e04400;
 
   --font-display: "Bodoni Moda Variable", "Bodoni Moda", Didot, "Times New Roman", serif;
   --font-head: "Inter Tight Variable", "Inter Tight", "Helvetica Neue", Arial, sans-serif;
