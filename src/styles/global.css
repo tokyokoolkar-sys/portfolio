@@ -45,11 +45,14 @@
 }
 
 @layer components {
-  /* Main headline: Bodoni Moda Black at its largest optical size. Display sizes only. */
+  /* Main headline: Bodoni Moda Black. Optical size 12, not the 96 maximum: at 96
+     the hairlines (the A's left leg and crossbar) drop under a pixel and the A
+     reads as a lone diagonal. Letter widths are the same at every optical size.
+     glyph.ts reads this value, so the dive measures the same shapes. */
   .type-display {
     font-family: var(--font-display);
     font-weight: 900;
-    font-variation-settings: "opsz" 96;
+    font-variation-settings: "opsz" 12;
     line-height: 0.8;
     letter-spacing: -0.02em;
   }

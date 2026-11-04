@@ -123,11 +123,43 @@ function blockHome() {
   return { x: block.offsetLeft, y: block.offsetTop, w: block.offsetWidth, h: block.offsetHeight };
 }
 
-/* ── Scene 03: Intro → the block ─────────────────────────────────
+type Rect = { x: number; y: number; w: number; h: number };
+
+/* The block transform that lays the block exactly over a viewport rect. */
+function blockOver(r: Rect) {
+  const home = blockHome();
+  return { x: r.x - home.x, y: r.y - home.y, scaleX: r.w / home.w, scaleY: r.h / home.h };
+}
+
+/* Wide screens get the pinned Work take. Phones and narrow screens get a stacked list. */
+const workStage = () => !touch && window.matchMedia("(min-width: 1024px) and (min-aspect-ratio: 4/5)").matches;
+
+/* Where the Work frame sits once its scene is pinned (the section's top at the viewport's top). */
+function workFrameRect(): Rect {
+  const section = $("#work");
+  const frame = $(".work-item .work-frame");
+  const [x, y] = offsetWithin(frame, section);
+  return { x, y, w: frame.offsetWidth, h: frame.offsetHeight };
+}
+
+/* Where the skills band sits once its section's top reaches the viewport's top. */
+function bandRect(): Rect {
+  const section = $("#toolbox");
+  const band = $(".skills-band");
+  const [x, y] = offsetWithin(band, section);
+  return { x, y, w: band.offsetWidth, h: band.offsetHeight };
+}
+
+const SIGNAL = "rgb(255, 79, 0)";
+const CLEAR = "rgba(255, 79, 0, 0)";
+
+/* ── Scene 03: Intro → the strip ─────────────────────────────────
  * The headline rises while the orange field scrolls in. Then the scene pins
- * and the field contracts into the block, which takes over from there.
+ * and About's text leaves, then the empty field squeezes into a full-width
+ * strip: the skills band's rect. The block takes the orange over there and
+ * the Toolbox scene starts at once.
  */
-function setupIntro() {
+function setupIntro(target: () => Rect) {
   const section = $("#about");
   const field = $(".intro-field");
   const block = $(".stage-block");
@@ -140,9 +172,9 @@ function setupIntro() {
     .from(lines, { yPercent: 105, stagger: 0.12, ease: "power3.out" }, 0.25)
     .from([".intro-label", ".intro-body p"], { autoAlpha: 0, y: 24, stagger: 0.08, ease: "power2.out" }, 0.55);
 
-  // The block's resting place, as an inset of the full-screen field.
+  // The target rect, as an inset of the full-screen field.
   const blockInset = () => {
-    const r = blockHome();
+    const r = target();
     const w = field.clientWidth;
     const h = field.clientHeight;
     return `inset(${r.y}px ${w - r.x - r.w}px ${h - r.y - r.h}px ${r.x}px)`;
@@ -154,33 +186,145 @@ function setupIntro() {
       scrollTrigger: {
         trigger: section,
         start: "top top",
-        end: pinLength(1.3, 0.9),
+        end: pinLength(2.5, 1.7),
         pin: true,
         scrub: true,
         invalidateOnRefresh: true,
       },
     })
-    .to({}, { duration: 0.3 }) // hold: read the headline
-    .to(field, { clipPath: blockInset, ease: "power3.inOut", duration: 0.7 })
-    .set(block, { autoAlpha: 1 })
+    .to({}, { duration: 0.35 }) // hold: read the headline
+    // About leaves before the field moves, so no text straddles the edge of the
+    // shrinking orange. Lines exit up through the same masks they rose in by,
+    // well past 100%: the line box (0.95) is tighter than the glyphs, so at
+    // -105% the tail of the "g" still shows. immediateRender off: the entry timeline above owns their starting state.
+    .fromTo(
+      lines,
+      { yPercent: 0 },
+      { yPercent: -140, stagger: 0.06, duration: 0.35, ease: "power2.in", immediateRender: false },
+    )
+    .fromTo(
+      [".intro-label", ".intro-body p"],
+      { autoAlpha: 1, y: 0 },
+      { autoAlpha: 0, y: -24, stagger: 0.04, duration: 0.3, ease: "power2.in", immediateRender: false },
+      "<",
+    )
+    // A long, gentle squeeze of the empty field: power2 rather than power3, so
+    // the middle of the move doesn't rush past in a few wheel ticks.
+    .to(field, { clipPath: blockInset, ease: "power2.inOut", duration: 1 }, ">+0.05")
+    .set(block, {
+      autoAlpha: 1,
+      x: () => blockOver(target()).x,
+      y: () => blockOver(target()).y,
+      scaleX: () => blockOver(target()).scaleX,
+      scaleY: () => blockOver(target()).scaleY,
+    })
     .set(field, { autoAlpha: 0 });
 }
 
-/* ── Scene 04: Work 01–04 ────────────────────────────────────────
- * Wide screens: the block flies into the project frame and becomes it. The
- * scene pins and four projects play through that one frame: media wipes up
- * through the orange, the copy swaps, and the giant number rolls to the next.
- * At the end the frame hands back to the block, which returns to its corner.
- * Phones and narrow screens get the stacked list with a simple wipe per frame.
+/* ── Between 03 and 04: the Toolbox band ─────────────────────────────
+ * The section is tucked under About's last screen, so it reaches the top the
+ * moment About's pin ends (About's text has already left). When it does
+ * the band sits exactly under the block, so the band's own orange takes over
+ * and the scene pins. The labels rise through masks like About's headline,
+ * and each row slides in from the side it travels from: Design and Systems
+ * from the right, Frontend from the left. Rows move only while you scroll,
+ * easing out so they slow to reading speed, and each travels far enough to
+ * show every item.
+ * Wide screens: the rows then wipe off, the block takes the orange back and
+ * slowly folds the strip into the Work frame, where it waits for Work.
+ * Elsewhere: the pin ends and the band scrolls on with the page.
  */
-function setupWork() {
+function setupSkills(stage: boolean) {
+  const section = $("#toolbox");
+  const band = $(".skills-band");
+  const block = $(".stage-block");
+  const tracks = gsap.utils.toArray<HTMLElement>(".skills-track");
+  const labels = SplitText.create([".skills-heading", ".skills-group"], { type: "lines", mask: "lines" }).lines;
+
+  const leftward = (i: number) => i % 2 === 0;
+  const fromX = (i: number) => (leftward(i) ? band.clientWidth : -tracks[i].offsetWidth);
+  const toX = (i: number) => (leftward(i) ? Math.min(0, band.clientWidth - tracks[i].offsetWidth) : 0);
+
+  // Tuck the band's section up over About's last screen, so it reaches the
+  // top (and pins) the moment About's pin ends: About is empty by then, and
+  // the strip never waits through a screen of blank scroll. Re-measured on
+  // every refresh, while pins are reverted.
+  const about = $("#about");
+  const tuck = () => {
+    section.style.marginTop = `${-about.offsetHeight}px`;
+  };
+  tuck();
+  ScrollTrigger.addEventListener("refreshInit", tuck);
+
+  // Until the swap, the block carries the orange and the band is just its text.
+  gsap.set(band, { backgroundColor: CLEAR });
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: section,
+      start: "top top",
+      end: stage ? pinLength(3.8, 0) : pinLength(2.4, 2),
+      pin: true,
+      scrub: true,
+      invalidateOnRefresh: true,
+    },
+  });
+  tl.set(block, { autoAlpha: 0 }, 0.01).set(band, { backgroundColor: SIGNAL }, 0.01);
+  tl.from(labels, { yPercent: 105, stagger: 0.1, duration: 0.5, ease: "power3.out" }, 0.05);
+  tracks.forEach((t, i) =>
+    tl.fromTo(t, { x: () => fromX(i) }, { x: () => toX(i), ease: "power1.out", duration: 1.8 }, 0.1 + i * 0.1),
+  );
+
+  if (!stage) {
+    tl.to({}, { duration: 0.2 });
+    return;
+  }
+
+  // The block takes the orange back and the band's contents wipe off it...
+  const atBand = () => blockOver(bandRect());
+  const atFrame = () => blockOver(workFrameRect());
+  const out = tl.duration() + 0.15;
+  tl.set(band, { backgroundColor: CLEAR }, out)
+    .set(block, { autoAlpha: 1 }, out)
+    .fromTo(
+      band,
+      { clipPath: "inset(0% 0% 0% 0%)" },
+      { clipPath: "inset(0% 0% 100% 0%)", duration: 0.4, ease: "power2.in" },
+      out,
+    )
+    // ...then the strip slowly folds into the Work frame.
+    .fromTo(
+      block,
+      { x: () => atBand().x, y: () => atBand().y, scaleX: () => atBand().scaleX, scaleY: () => atBand().scaleY },
+      {
+        x: () => atFrame().x,
+        y: () => atFrame().y,
+        scaleX: () => atFrame().scaleX,
+        scaleY: () => atFrame().scaleY,
+        duration: 1.1,
+        ease: "power2.inOut",
+      },
+      out + 0.3,
+    )
+    .to({}, { duration: 0.15 });
+}
+
+/* ── Scene 04: Work 01–04 ────────────────────────────────────────
+ * Wide screens: the block already waits at the frame's rect (the skills strip
+ * folded into it), so the page simply arrives around it. When the scene pins,
+ * the frame's own surface takes over the orange. Four projects play through
+ * that one frame: media wipes up through the orange, the copy swaps, and the
+ * giant number rolls to the next. At the end the block takes the frame back
+ * and shrinks away into its centre. Phones get the stacked list with a simple
+ * wipe per frame.
+ */
+function setupWork(stage: boolean) {
   const section = $("#work");
   const block = $(".stage-block");
   const items = gsap.utils.toArray<HTMLElement>(".work-item");
   const pick = (el: HTMLElement, sel: string) => Array.from(el.querySelectorAll<HTMLElement>(sel));
   const media = items.map((i) => pick(i, ".work-media")[0]);
 
-  const stage = !touch && window.matchMedia("(min-width: 1024px) and (min-aspect-ratio: 4/5)").matches;
   if (!stage) {
     media.forEach((m) =>
       gsap.from(m, {
@@ -193,56 +337,18 @@ function setupWork() {
     return;
   }
 
-  section.classList.add("is-stage");
-  const frame = pick(items[0], ".work-frame")[0];
   // One surface only: the first item's. Every media layer paints above it.
   const surfaces = pick(items[0], ".work-frame-bg");
   const copies = items.map((i) => pick(i, ".work-copy > *"));
   const digits = items.map((i) => pick(i, ".work-digit"));
   const termLines = pick(section, ".term-line");
 
-  // Where the frame sits once the scene is pinned, as a transform of the block.
-  const geo = { x: 0, y: 0, sx: 1, sy: 1 };
-  const measure = () => {
-    const [fx, fy] = offsetWithin(frame, section);
-    const home = blockHome();
-    geo.x = fx - home.x;
-    geo.y = fy - home.y;
-    geo.sx = frame.offsetWidth / home.w;
-    geo.sy = frame.offsetHeight / home.h;
-  };
-  measure();
-  ScrollTrigger.addEventListener("refreshInit", measure);
-
-  gsap.set(block, { transformOrigin: "0 0" });
   gsap.set(media, { clipPath: "inset(100% 0% 0% 0%)" });
   gsap.set(termLines, { autoAlpha: 0 });
   items.slice(1).forEach((_, k) => {
     gsap.set(copies[k + 1], { autoAlpha: 0, y: 30 });
     gsap.set(digits[k + 1], { yPercent: 120 });
   });
-
-  // Approach: the block flies from its corner into the frame as the scene arrives.
-  gsap
-    .timeline({
-      scrollTrigger: { trigger: section, start: "top bottom", end: "top top", scrub: true, invalidateOnRefresh: true },
-    })
-    .fromTo(
-      block,
-      { x: 0, y: 0, scaleX: 1, scaleY: 1 },
-      {
-        x: () => geo.x,
-        y: () => geo.y,
-        scaleX: () => geo.sx,
-        scaleY: () => geo.sy,
-        ease: "power2.inOut",
-        duration: 1,
-        immediateRender: false,
-      },
-    )
-    // Landed: the frame takes over the orange, so nothing doubles up.
-    .set(surfaces, { visibility: "visible" })
-    .set(block, { autoAlpha: 0 });
 
   const tl = gsap.timeline({
     defaults: { ease: "power3.inOut" },
@@ -255,6 +361,9 @@ function setupWork() {
       invalidateOnRefresh: true,
     },
   });
+
+  // Pinned: the frame's surface sits exactly under the waiting block, so swap them.
+  tl.set(surfaces, { visibility: "visible" }, 0.01).set(block, { autoAlpha: 0 }, 0.01);
 
   items.forEach((_, i) => {
     tl.to(media[i], { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6 }, i === 0 ? 0.1 : ">-0.15");
@@ -273,10 +382,21 @@ function setupWork() {
       .to(copies[i + 1], { autoAlpha: 1, y: 0, stagger: 0.04, duration: 0.45, ease: "power3.out" }, at + 0.5);
   });
 
-  // Hand the frame back to the block, which returns to its corner.
+  // Hand the frame back to the block, which shrinks away into its centre.
+  // It comes back at Contact.
+  const over = () => blockOver(workFrameRect());
+  const gone = () => {
+    const r = workFrameRect();
+    return blockOver({ x: r.x + r.w / 2, y: r.y + r.h / 2, w: 0, h: 0 });
+  };
   tl.set(block, { autoAlpha: 1 })
     .set(surfaces, { visibility: "hidden" })
-    .to(block, { x: 0, y: 0, scaleX: 1, scaleY: 1, duration: 0.9 });
+    .fromTo(
+      block,
+      { x: () => over().x, y: () => over().y, scaleX: () => over().scaleX, scaleY: () => over().scaleY },
+      { x: () => gone().x, y: () => gone().y, scaleX: 0, scaleY: 0, duration: 0.7, ease: "power2.inOut" },
+    )
+    .set(block, { autoAlpha: 0 });
 }
 
 /* ── Boot ────────────────────────────────────────────────────────── */
@@ -290,8 +410,13 @@ async function boot() {
   // is pinned right, the first one when it fills the width on tall screens.
   const wide = window.matchMedia("(min-aspect-ratio: 4/5)").matches;
   setupDive(split.chars[wide ? 2 : 0] as HTMLElement);
-  setupIntro();
-  setupWork();
+  // Decide the Work layout first: the strip measures the frame it folds into.
+  const stage = workStage();
+  if (stage) $("#work").classList.add("is-stage");
+  gsap.set(".stage-block", { transformOrigin: "0 0" });
+  setupIntro(bandRect);
+  setupSkills(stage);
+  setupWork(stage);
   ScrollTrigger.refresh();
 }
 

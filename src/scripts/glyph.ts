@@ -35,23 +35,29 @@ export function measureStroke(glyph: HTMLElement): Stroke | null {
   const char = glyph.textContent?.trim() ?? "";
   if (!fs || !char) return null;
 
-  // Always render at 400px. Canvas text gets automatic optical sizing, so a
-  // size above the font's opsz maximum (96) matches the DOM glyph.
+  // Render the glyph 400px tall-ish for precision. Canvas text has no
+  // font-variation-settings; it takes its optical size from the font size
+  // (automatic optical sizing). So set the font size to the DOM's opsz and
+  // scale the canvas up to 400px: same shapes as the page, full resolution.
+  const opsz = Number(/"opsz"\s+([\d.]+)/.exec(style.fontVariationSettings)?.[1]) || Math.min(fs, 96);
   const k = 400 / fs;
+  const up = 400 / opsz;
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
   if (!ctx) return null;
-  const font = `${style.fontWeight} 400px ${style.fontFamily}`;
+  const font = `${style.fontWeight} ${opsz}px ${style.fontFamily}`;
   ctx.font = font;
   const m = ctx.measureText(char);
-  const ascent = m.fontBoundingBoxAscent;
-  const descent = m.fontBoundingBoxDescent;
+  const ascent = m.fontBoundingBoxAscent * up;
+  const descent = m.fontBoundingBoxDescent * up;
   const pad = 80;
-  canvas.width = Math.ceil(m.width + pad * 2);
+  canvas.width = Math.ceil(m.width * up + pad * 2);
   canvas.height = Math.ceil(ascent + descent + pad * 2);
   ctx.font = font;
   ctx.fillStyle = "#000";
-  ctx.fillText(char, pad, pad + ascent);
+  ctx.setTransform(up, 0, 0, up, pad, pad + ascent);
+  ctx.fillText(char, 0, 0);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
 
   const { width: W, height: H } = canvas;
   const alpha = ctx.getImageData(0, 0, W, H).data;
