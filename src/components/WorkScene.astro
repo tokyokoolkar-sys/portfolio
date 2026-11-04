@@ -1,0 +1,547 @@
+---
+/**
+ * Scene 04: Work 01–04.
+ * The block flies into the project frame and becomes it. On wide screens with
+ * motion on, the scene pins and the four projects play through one frame, with
+ * giant ExtraBold numbers rolling 01 → 04. Everywhere else (phones, reduced
+ * motion, no JS) the same content is a plain stacked list.
+ */
+
+type Step = { n: string; title: string; note: string; accent?: boolean };
+type Project = {
+  id: string;
+  n: string;
+  title: string;
+  meta: string;
+  hook: string;
+  role?: string;
+  points: string[];
+  stack: string;
+  links: { label: string; href: string }[];
+  media:
+    | { kind: "image"; src: string; alt: string; width: number; height: number }
+    | { kind: "flow"; tone: "ink" | "cream"; tag: string; steps: Step[] }
+    | { kind: "terminal"; tag: string; lines: { text: string; tone?: "dim" | "hot" | "cmd" }[] };
+};
+
+const gh = "https://github.com/tokyokoolkar-sys";
+
+const projects: Project[] = [
+  {
+    id: "hedgehound",
+    n: "01",
+    title: "HedgeHound",
+    meta: "2026 · Design and build, solo",
+    hook: "A website that shows crypto funding spreads as a night sky. Coins are stars, and the scanner is a radar sweeping the dark.",
+    points: [
+      "One persistent three.js canvas with custom GLSL for the stars, the glass hound and a pixel-bite transition.",
+      "Scroll drives every transition. When you stop scrolling, the sky stops too.",
+      "Every number is tagged LIVE, PAPER or SAMPLE, so nothing on screen is invented.",
+    ],
+    stack: "Next.js 16 · React Three Fiber · GLSL · GSAP · Lenis",
+    links: [{ label: "Code", href: `${gh}/HedgeHound` }],
+    media: {
+      kind: "image",
+      src: "/img/work/hedgehound.webp",
+      alt: "HedgeHound's poster: a dark hound sniffing a torn chart under the words Hedge Hound, Sniff the spread",
+      width: 1200,
+      height: 630,
+    },
+  },
+  {
+    id: "agent-relay",
+    n: "02",
+    title: "agent-relay",
+    meta: "2026 · Design and build, solo",
+    hook: "Claude Code hands build tasks to other coding agents, answers their questions, and reviews every diff before it merges.",
+    points: [
+      "A Node bridge with no runtime dependencies runs OpenCode and Command Code over the Agent Client Protocol.",
+      "Each task gets its own git worktree and branch, so agents never touch the main tree.",
+      "Eleven relay tools, with the safety rules repeated in the tool descriptions Claude always sees.",
+    ],
+    stack: "Node · TypeScript · ACP · Claude Code plugins",
+    links: [{ label: "Code", href: `${gh}/agent-relay` }],
+    media: {
+      kind: "flow",
+      tone: "ink",
+      tag: "Screen recording coming soon",
+      steps: [
+        { n: "01", title: "Delegate", note: "Claude writes a self-contained brief" },
+        { n: "02", title: "Isolate", note: "Own worktree and branch per task" },
+        { n: "03", title: "Build", note: "OpenCode or Command Code, over ACP" },
+        { n: "04", title: "Ask", note: "Questions and permissions come back to Claude" },
+        { n: "05", title: "Review", note: "Claude reads the whole diff", accent: true },
+        { n: "06", title: "Merge", note: "One merge commit, easy to revert" },
+      ],
+    },
+  },
+  {
+    id: "skillforge",
+    n: "03",
+    title: "SkillForge",
+    meta: "2026 · AI SAP Hackathon · Team Choco Munchacho",
+    hook: "An AI supervisor for Indonesian factories. When a machine fails, it plans the repair and a new schedule, then waits for a person before it writes to SAP.",
+    role: "My job was the problems that got past my teammates and their AI tools: the app layer, the architecture, and the bugs nobody else could crack.",
+    points: [
+      "OR-Tools CP-SAT finds a valid reschedule in under 60 seconds.",
+      "Three scenarios priced in Rupiah, with field-level diffs and an ERP drift check before write-back.",
+      "Every AI claim cites the plant document it came from.",
+    ],
+    stack: "FastAPI · React · OR-Tools · RAG · SAP S/4HANA",
+    links: [{ label: "Code", href: `${gh}/Sokrates-test` }],
+    media: {
+      kind: "flow",
+      tone: "cream",
+      tag: "Supervised autonomy",
+      steps: [
+        { n: "01", title: "Alarm", note: "A machine on the line raises a fault" },
+        { n: "02", title: "Skill", note: "The agent loads the matching playbook" },
+        { n: "03", title: "Reschedule", note: "CP-SAT, under 60 seconds" },
+        { n: "04", title: "Scenarios", note: "Three options, priced in Rupiah" },
+        { n: "05", title: "Approve", note: "A supervisor signs off in one click", accent: true },
+        { n: "06", title: "Write back", note: "SAP, after a drift check" },
+      ],
+    },
+  },
+  {
+    id: "backtest",
+    n: "04",
+    title: "BacktestEngine",
+    meta: "2026 · Design and build, solo",
+    hook: "Does a candle-colour scalping rule make money on SYN futures? I built a backtest to answer honestly. The answer is no.",
+    points: [
+      "Bar by bar on closed candles only, with fees, funding, leverage and liquidation.",
+      "305,280 one-minute candles across seven months and 77,018 trades.",
+      "A stop removes all 73 liquidations, but the rule wins 17.5% of trades and needs 48.5% to break even.",
+    ],
+    stack: "Python · pandas · Binance public data",
+    links: [{ label: "Code", href: `${gh}/BacktestEngine` }],
+    media: {
+      kind: "terminal",
+      tag: "Real run · 4 Nov 2026",
+      lines: [
+        { text: "$ python run.py --start 2025-12 --end 2026-06", tone: "cmd" },
+        { text: "[run] months=2025-12..2026-06  n=7  symbol=SYNUSDT", tone: "dim" },
+        { text: "[run] klines loaded  : 305,280 rows", tone: "dim" },
+        { text: "[run] funding loaded : 1,271 rows", tone: "dim" },
+        { text: "[run] bare: 77018 trades", tone: "dim" },
+        { text: "[run] +stop: 77141 trades", tone: "dim" },
+        { text: "[run] +stop+gate: 49240 trades", tone: "dim" },
+        { text: "" },
+        { text: "=== Scorecard ===" },
+        { text: "                     bare     +stop  +stop+gate" },
+        { text: "        Trades       77018     77141       49240" },
+        { text: "      Win rate       17.5%     17.5%       17.8%" },
+        { text: "         Stops           0       816         546" },
+        { text: "  Liquidations          73         0           0" },
+        { text: "   BE win rate       48.5%     48.7%       48.6%", tone: "hot" },
+        { text: "Actual win rate      17.5%     17.5%       17.8%", tone: "hot" },
+      ],
+    },
+  },
+];
+---
+
+<section id="work" class="work relative" aria-labelledby="work-heading">
+  <h2 id="work-heading" class="work-heading type-label">(03) Selected work</h2>
+
+  <ol class="work-list">
+    {
+      projects.map((p) => (
+        <li class="work-item" data-project={p.id}>
+          <div class="work-num" aria-hidden="true">
+            {[...p.n].map((d) => (
+              <span class="work-digit-mask">
+                <span class="work-digit">{d}</span>
+              </span>
+            ))}
+          </div>
+
+          <div class="work-copy">
+            <p class="work-meta type-label">{p.meta}</p>
+            <h3 class="work-title font-head font-bold">
+              <span class="sr-only">{p.n}. </span>
+              {p.title}
+            </h3>
+            <p class="work-hook">{p.hook}</p>
+            {p.role && <p class="work-role">{p.role}</p>}
+            <ul class="work-points">
+              {p.points.map((pt) => (
+                <li>{pt}</li>
+              ))}
+            </ul>
+            <p class="work-stack type-label">{p.stack}</p>
+            <p class="work-links">
+              {p.links.map((l) => (
+                <a class="work-link type-label" href={l.href} target="_blank" rel="noopener">
+                  {l.label} <span aria-hidden="true">↗</span>
+                </a>
+              ))}
+            </p>
+          </div>
+
+          <div class="work-frame">
+            <div class="work-frame-bg" aria-hidden="true" />
+            <div class={`work-media work-media--${p.media.kind}`}>
+              {p.media.kind === "image" && (
+                <img
+                  src={p.media.src}
+                  alt={p.media.alt}
+                  width={p.media.width}
+                  height={p.media.height}
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+
+              {p.media.kind === "flow" && (
+                <div class={`flow flow--${p.media.tone}`}>
+                  <p class="flow-tag type-label">{p.media.tag}</p>
+                  <ol class="flow-grid">
+                    {p.media.steps.map((s) => (
+                      <li class:list={["flow-step", { "flow-step--accent": s.accent }]}>
+                        <span class="flow-n">{s.n}</span>
+                        <span class="flow-title">{s.title}</span>
+                        <span class="flow-note">{s.note}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+              {p.media.kind === "terminal" && (
+                <div class="term">
+                  <p class="flow-tag type-label">{p.media.tag}</p>
+                  <div class="term-body">
+                    {p.media.lines.map((l) => (
+                      <span class:list={["term-line", l.tone && `term-line--${l.tone}`]}>{l.text || " "}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  /* ── Stacked layout: phones, reduced motion, no JS ───────────── */
+  .work {
+    padding: 6rem 1.25rem 4rem;
+  }
+  .work-heading {
+    margin-bottom: 2.5rem;
+  }
+  .work-list {
+    display: grid;
+    gap: 5rem;
+  }
+  .work-item {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 1.25rem;
+    row-gap: 1.25rem;
+    align-items: start;
+  }
+  .work-num,
+  .work-copy,
+  .work-frame {
+    grid-column: 1 / -1;
+  }
+
+  .work-num {
+    display: flex;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: clamp(6rem, 34vw, 11rem);
+    line-height: 0.8;
+    letter-spacing: -0.06em;
+  }
+  .work-digit-mask {
+    display: block;
+    overflow: hidden;
+    /* room for the tail of the glyphs inside the mask */
+    padding-bottom: 0.04em;
+  }
+  .work-digit {
+    display: block;
+  }
+
+  .work-title {
+    font-size: clamp(2rem, 3.2vw, 3.25rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin: 0.6rem 0 0.9rem;
+  }
+  .work-hook {
+    font-size: clamp(1.05rem, 1.2vw, 1.25rem);
+    line-height: 1.4;
+    max-width: 34rem;
+  }
+  .work-role {
+    margin-top: 0.9rem;
+    padding-left: 0.9rem;
+    border-left: 3px solid var(--color-signal);
+    font-size: 0.95rem;
+    line-height: 1.45;
+    max-width: 32rem;
+  }
+  .work-points {
+    margin-top: 1.1rem;
+    display: grid;
+    gap: 0.45rem;
+    max-width: 33rem;
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+  .work-points li {
+    position: relative;
+    padding-left: 1.1rem;
+  }
+  .work-points li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 0.4rem;
+    height: 0.4rem;
+    background: var(--color-signal);
+  }
+  .work-stack {
+    margin-top: 1.25rem;
+    opacity: 0.65;
+  }
+  .work-links {
+    margin-top: 0.9rem;
+    display: flex;
+    gap: 1.5rem;
+  }
+  .work-link {
+    background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 100% 1px;
+    padding-bottom: 2px;
+    transition: color 0.2s ease;
+  }
+  .work-link:hover,
+  .work-link:focus-visible {
+    color: var(--color-signal);
+  }
+
+  /* ── The frame: the block's other shape ─────────────────────── */
+  .work-frame {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    container-type: inline-size;
+  }
+  .work-frame-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--color-signal);
+  }
+  /* A thin orange rim stays visible: the block is the frame. */
+  .work-media {
+    position: absolute;
+    inset: 1.1cqi;
+    overflow: hidden;
+  }
+  .work-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Flow diagrams: a Swiss 3×2 grid of steps */
+  .flow,
+  .term {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 4.5cqi 4.5cqi 4cqi;
+  }
+  .flow--ink,
+  .term {
+    background: var(--color-ink);
+    color: var(--color-cream);
+  }
+  .flow--cream {
+    background: var(--color-cream);
+    color: var(--color-ink);
+  }
+  .flow-tag {
+    font-size: max(0.6rem, 1.5cqi);
+    opacity: 0.7;
+    margin-bottom: auto;
+  }
+  .flow-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid currentColor;
+  }
+  .flow-step {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8cqi;
+    padding: 2.2cqi 2cqi 3cqi 0;
+    border-bottom: 1px solid currentColor;
+    min-height: 15cqi;
+  }
+  .flow-step:not(:nth-child(3n + 1)) {
+    padding-left: 2cqi;
+    border-left: 1px solid currentColor;
+  }
+  .flow-step--accent {
+    background: var(--color-signal);
+    color: var(--color-ink);
+  }
+  .flow-step--accent:nth-child(3n + 1) {
+    padding-left: 2cqi;
+  }
+  .flow-n {
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: max(0.6rem, 1.5cqi);
+    letter-spacing: 0.06em;
+  }
+  .flow-title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: max(1rem, 3.6cqi);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .flow-note {
+    font-size: max(0.7rem, 1.7cqi);
+    line-height: 1.3;
+    opacity: 0.8;
+  }
+
+  /* Terminal replay */
+  .term-body {
+    font-family: var(--font-mono);
+    font-size: max(0.5rem, 1.9cqi);
+    line-height: 1.5;
+    white-space: pre;
+    overflow: hidden;
+  }
+  .term-line {
+    display: block;
+    white-space: pre;
+  }
+  .term-line--dim {
+    opacity: 0.55;
+  }
+  .term-line--cmd {
+    color: var(--color-signal);
+  }
+  .term-line--hot {
+    color: var(--color-signal);
+    font-weight: 700;
+  }
+
+  /* ── Phones: a taller frame, so the step grid gets two roomy columns ── */
+  @media (max-width: 639px) {
+    .work-frame {
+      aspect-ratio: 4 / 5;
+    }
+    .flow-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .flow-step,
+    .flow-step:not(:nth-child(3n + 1)) {
+      padding: 3.5cqi 3cqi 4.5cqi 0;
+      border-left: 0;
+      min-height: 0;
+    }
+    .flow-step:nth-child(2n) {
+      padding-left: 3cqi;
+      border-left: 1px solid currentColor;
+    }
+    .flow-step--accent,
+    .flow-step--accent:nth-child(3n + 1) {
+      padding-left: 3cqi;
+    }
+    .flow-title {
+      font-size: max(1rem, 5.5cqi);
+    }
+    .flow-note {
+      font-size: max(0.72rem, 3.4cqi);
+    }
+    .flow-n,
+    .flow-tag {
+      font-size: max(0.6rem, 2.8cqi);
+    }
+    .term-body {
+      font-size: max(0.5rem, 2.55cqi);
+    }
+  }
+
+  /* ── Medium screens without the pinned take: copy beside the frame ── */
+  @media (min-width: 1024px) {
+    .work {
+      padding: 8rem 2rem 6rem;
+    }
+    .work-list {
+      gap: 9rem;
+    }
+    .work-item {
+      column-gap: 1.5rem;
+    }
+    .work-num {
+      grid-column: 1 / 6;
+      font-size: min(30svh, 14vw);
+    }
+    .work-copy {
+      grid-column: 1 / 6;
+    }
+    .work-frame {
+      grid-column: 6 / -1;
+      grid-row: 1 / span 2;
+      align-self: center;
+    }
+  }
+
+  /* ── The pinned take: all four projects share one stage ─────── */
+  .work.is-stage {
+    height: 100lvh;
+    padding: 0;
+    overflow: hidden;
+  }
+  .work.is-stage .work-heading {
+    position: absolute;
+    top: 5.5rem;
+    left: 2rem;
+    margin: 0;
+    z-index: 2;
+  }
+  .work.is-stage .work-list {
+    display: block;
+    position: absolute;
+    inset: 0;
+  }
+  .work.is-stage .work-item {
+    position: absolute;
+    inset: 0;
+    /* items overlap: only the visible copy's links take clicks */
+    pointer-events: none;
+    padding: 8rem 2rem 2.5rem;
+    align-content: start;
+  }
+  .work.is-stage .work-frame {
+    grid-row: 1 / span 2;
+    align-self: center;
+    /* keep the frame inside the stage on short screens */
+    max-height: calc(100lvh - 10.5rem);
+    justify-self: end;
+    width: min(100%, calc((100lvh - 10.5rem) * 1.6));
+  }
+  .work.is-stage .work-link {
+    pointer-events: auto;
+  }
+  /* Until the block lands, the frame has no surface of its own. */
+  .work.is-stage .work-frame-bg {
+    visibility: hidden;
+  }
+</style>

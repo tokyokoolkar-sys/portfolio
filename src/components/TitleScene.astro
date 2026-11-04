@@ -1,0 +1,149 @@
+---
+/**
+ * Scene 01: Title.
+ * ATAQAH in giant orange Bodoni, with the cut-out portrait in front of it.
+ * On desktop the portrait is pinned bottom-right so the photo's cropped edges
+ * sit on the viewport edges. The portrait arrives with the pixel-bite reveal.
+ */
+---
+
+<section id="title" class="title-scene relative h-lvh min-h-[560px] overflow-hidden" aria-labelledby="title-heading">
+  <!-- The stage is what the camera films: name and portrait move together. The labels stay put. -->
+  <div class="title-stage">
+    <h1 id="title-heading" class="title-name">
+      <span class="sr-only">Ataqah Ramadhan, design engineer</span>
+      <span class="title-word type-display text-signal" aria-hidden="true">ATAQAH</span>
+    </h1>
+
+    <div class="portrait">
+      <img
+        class="portrait-img"
+        src="/img/portrait-1412.webp"
+        srcset="/img/portrait-900.webp 900w, /img/portrait-1412.webp 1412w"
+        sizes="(min-aspect-ratio: 4/5) 57svh, 100vw"
+        width="1412"
+        height="2507"
+        alt="Ataqah Ramadhan in glasses and a black sweater, chin resting on his hand"
+        fetchpriority="high"
+      />
+      <canvas class="portrait-canvas" aria-hidden="true"></canvas>
+    </div>
+  </div>
+
+  <div class="title-labels">
+    <p class="title-label font-head text-lg leading-tight font-bold md:text-xl">
+      Ataqah Ramadhan<br />
+      <span class="font-medium">Design engineer</span>
+    </p>
+    <p class="title-label type-label">
+      Jakarta, Indonesia<br />
+      Open to internships from mid&#8209;2027<br />
+      Remote or on-site
+    </p>
+    <p class="title-label scroll-cue type-label" aria-hidden="true">
+      <span class="scroll-cue-block"></span> Scroll
+    </p>
+  </div>
+</section>
+
+<style>
+  .title-scene {
+    --portrait-ratio: 1412 / 2507;
+  }
+
+  /* ── Name ─────────────────────────────────────────── */
+  .title-name {
+    position: absolute;
+    inset-inline: 0;
+    top: 36svh;
+    z-index: 1;
+    text-align: center;
+  }
+  .title-stage {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .title-word {
+    display: inline-block;
+    font-size: 20vw;
+    white-space: nowrap;
+  }
+
+  /* ── Portrait ─────────────────────────────────────── */
+  .portrait {
+    position: absolute;
+    z-index: 2;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    aspect-ratio: var(--portrait-ratio);
+  }
+  .portrait-img,
+  .portrait-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .portrait-canvas {
+    opacity: 0;
+    image-rendering: pixelated;
+  }
+  :global(.motion) .portrait-img {
+    opacity: 0;
+  }
+
+  /* ── Labels ───────────────────────────────────────── */
+  .title-labels {
+    position: absolute;
+    z-index: 3;
+    top: 4.25rem;
+    left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .scroll-cue {
+    display: none;
+  }
+
+  /* ── Wide screens: portrait pinned bottom-right ───── */
+  /* ATAQAH in Bodoni Moda Black is ~4.75em wide, so 20vw spans ~95% of the viewport. */
+  @media (min-aspect-ratio: 4/5) {
+    .title-name {
+      top: 24svh;
+      text-align: left;
+      padding-inline-start: 2vw;
+    }
+    .title-word {
+      font-size: min(20vw, 40svh);
+    }
+    .portrait {
+      left: auto;
+      right: 0;
+      width: auto;
+      height: 100%;
+    }
+    .title-labels {
+      top: auto;
+      bottom: 2rem;
+      left: 2rem;
+      flex-direction: row;
+      align-items: flex-end;
+      gap: 3rem;
+    }
+    .scroll-cue {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+  }
+
+  .scroll-cue-block {
+    display: block;
+    width: 0.6rem;
+    height: 0.6rem;
+    background: var(--color-signal);
+  }
+</style>

@@ -1,0 +1,39 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Ataqah Ramadhan, design engineer",
+  description = "Ataqah Ramadhan designs interfaces and builds what runs behind them. Computer Science student in Jakarta, open to internships from mid-2027.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f2ede4" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <!-- Hide motion-managed elements before first paint, but only when JS runs and motion is allowed. -->
+    <script is:inline>
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.classList.add("motion");
+        // Safety net: if the intro script never starts, show everything as-is.
+        setTimeout(() => {
+          if (!window.__introStarted) document.documentElement.classList.remove("motion");
+        }, 2500);
+      }
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

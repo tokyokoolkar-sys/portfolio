@@ -1,0 +1,29 @@
+---
+/**
+ * The block: the persistent orange square that carries the one-take.
+ * It is born when the intro's orange field contracts, then stays on screen.
+ * Later scenes move and reshape it. Hidden unless motion is on.
+ */
+---
+
+<div class="stage-block" aria-hidden="true"></div>
+
+<style>
+  .stage-block {
+    position: fixed;
+    z-index: 40;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    width: clamp(2.75rem, 7vmin, 5.5rem);
+    aspect-ratio: 1;
+    background: var(--color-signal);
+    visibility: hidden;
+    pointer-events: none;
+  }
+  @media (min-width: 768px) {
+    .stage-block {
+      right: 2rem;
+      bottom: 2rem;
+    }
+  }
+</style>

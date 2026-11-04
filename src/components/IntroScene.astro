@@ -1,0 +1,55 @@
+---
+/**
+ * Scene 03: Intro.
+ * The dive lands on a full orange field. The headline rises, then the field
+ * contracts into the block, which stays on screen for the rest of the take.
+ */
+---
+
+<section id="about" class="intro-scene relative min-h-svh overflow-hidden" aria-labelledby="intro-heading">
+  <div class="intro-field" aria-hidden="true"></div>
+
+  <div class="intro-content relative z-10 grid min-h-svh grid-cols-12 gap-x-5 px-5 pt-28 pb-10 md:px-8 md:pt-36">
+    <p class="intro-label type-label col-span-12 md:col-span-2">(02) About</p>
+
+    <div class="col-span-12 md:col-span-9 md:col-start-3">
+      <h2 id="intro-heading" class="intro-headline font-head font-bold">
+        I design interfaces and build what runs behind them.
+      </h2>
+
+      <div class="intro-body mt-10 grid gap-5 md:mt-14 md:max-w-[52rem] md:grid-cols-2 md:gap-8">
+        <p>
+          I’m a Computer Science student in Jakarta, graduating in 2028. I work where design meets engineering:
+          I draw the interface, then build the motion, the 3D, the type, and the systems that keep its numbers
+          honest.
+        </p>
+        <p>
+          Outside class I build AI agent tooling and market-research engines. They taught me to test things
+          properly and to label every number for what it is.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Overlap the title by a few px so no cream sub-pixel seam shows at the hand-off. */
+  .intro-scene {
+    margin-top: -3px;
+  }
+  .intro-field {
+    position: absolute;
+    inset: 0;
+    background: var(--color-signal);
+  }
+  .intro-headline {
+    font-size: clamp(2.6rem, 6.4vw, 7.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    max-width: 14ch;
+  }
+  .intro-body {
+    font-size: clamp(1rem, 1.15vw, 1.2rem);
+    line-height: 1.5;
+  }
+</style>

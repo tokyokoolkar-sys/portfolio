@@ -1,0 +1,55 @@
+---
+const links = [
+  { href: "#work", label: "Work" },
+  { href: "#about", label: "About" },
+  { href: "#contact", label: "Contact" },
+];
+---
+
+<header class="index-bar pointer-events-none fixed inset-x-0 top-0 z-50">
+  <nav
+    class="pointer-events-auto flex items-center justify-between px-5 py-4 md:px-8 md:py-5"
+    aria-label="Primary"
+  >
+    <a href="#title" class="flex items-center gap-2.5 font-head text-sm font-bold tracking-tight">
+      <span class="block size-3 bg-signal" aria-hidden="true"></span>
+      <span class="sr-only sm:not-sr-only">Ataqah Ramadhan</span>
+    </a>
+    <ul class="flex gap-5 md:gap-8">
+      {
+        links.map((l) => (
+          <li>
+            <a href={l.href} class="type-label index-link">
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<style>
+  /* The bar keeps its own margin clear: whatever scrolls under it is blurred.
+     No tint, so the band disappears over cream and over orange alike. The blur
+     fades out over a short tail instead of ending on a hard line. */
+  .index-bar::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: calc(100% + 0.75rem);
+    z-index: -1;
+    -webkit-backdrop-filter: blur(28px);
+    backdrop-filter: blur(28px);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 0.75rem), transparent);
+  }
+
+  .index-link {
+    background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1px;
+    transition: background-size 0.3s ease;
+  }
+  .index-link:hover,
+  .index-link:focus-visible {
+    background-size: 100% 1px;
+  }
+</style>

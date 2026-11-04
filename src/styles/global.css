@@ -1,0 +1,66 @@
+@import "@fontsource-variable/bodoni-moda/opsz.css";
+@import "@fontsource-variable/inter-tight";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+@import "lenis/dist/lenis.css";
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #f2ede4;
+  --color-ink: #111111;
+  --color-signal: #ff4f00;
+
+  --font-display: "Bodoni Moda Variable", "Bodoni Moda", Didot, "Times New Roman", serif;
+  --font-head: "Inter Tight Variable", "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Inter Variable", Inter, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    background: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-signal);
+    color: var(--color-cream);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 3px;
+  }
+
+  /* Elements the intro animates in. Hidden only while motion is on. */
+  .motion .title-word {
+    visibility: hidden;
+  }
+  .motion .title-label {
+    opacity: 0;
+  }
+}
+
+@layer components {
+  /* Main headline: Bodoni Moda Black at its largest optical size. Display sizes only. */
+  .type-display {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-variation-settings: "opsz" 96;
+    line-height: 0.8;
+    letter-spacing: -0.02em;
+  }
+
+  /* Labels and dates: Inter Tight Medium. */
+  .type-label {
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+}
