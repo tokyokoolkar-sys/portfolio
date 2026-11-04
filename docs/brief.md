@@ -4,7 +4,7 @@ Agreed in the grilling session on 2026-11-04. This is the source of truth for sc
 
 ## Who and what
 
-- **Ataqah Ramadhan Widiyana Putra**, design engineer. Computer Science, graduating 2028.
+- **Ataqah Ramadhan Widiyana Putra**, design engineer building AI agents (the one title, used in the hero label and meta; matches LinkedIn). Computer Science, graduating 2028.
 - Headline: *"I design interfaces and build what runs behind them."*
 - Audience: recruiters hiring interns from mid-2027.
 - Location line: *Jakarta, Indonesia · Open to internships from mid-2027 · Remote or on-site.*
@@ -48,10 +48,10 @@ Agreed in the grilling session on 2026-11-04. This is the source of truth for sc
 3. **Intro.** The headline sits on the orange field. The field then squeezes into a full-width strip, and **the block** takes it over.
    About's content sits on the screen's vertical centre. Before the field moves, About's text leaves (headline lines up through their masks, label and body fade up), so nothing straddles the shrinking edge. Then the empty field squeezes, long and gentle (power2, about 1.2 screens of scroll on desktop).
    **Toolbox band (built 4 Nov 2026).** The strip is the Toolbox: label Toolbox, three rows of skills (Design, Frontend, Systems) in ink ExtraBold on orange, separated by small squares. The Toolbox section is tucked under About's last screen, so the band pins the moment the squeeze ends: no blank scroll, nothing rises with the page. Then the labels rise through masks like About's headline, and each row slides in from the side it travels from (Design and Systems from the right, Frontend from the left), easing to reading speed, only while you scroll. Wide screens then wipe the rows off and slowly fold the strip into the Work frame (about one screen of scroll). Phones unpin and let the band scroll on. Reduced motion and no JS get the same band as a static wrapped list. The skill list is a draft from shipped projects; the user edits it.
-4. **Work 01–04** (label 04). The block becomes each project's frame, with giant ExtraBold numbers.
+4. **Work 01–04.** Order since the 5 Nov 2026 recruiter review: SkillForge (the award), agent-relay, HedgeHound (design showcase), BacktestEngine (stays last: the crawl eats its terminal). The block becomes each project's frame, with giant ExtraBold numbers.
    1. **HedgeHound.** Flagship. A muted looping video of the local 3D sky, with a poster frame.
    2. **agent-relay.** The user's own screen recording (`agent-relay-demo.mp4`) plus a bridge, worktree and agent diagram. Placeholder until the recording arrives.
-   3. **Sokrates / SkillForge.** AI SAP Hackathon, team Choco Munchacho. Role, in the user's words: *the problems that got past my teammates and their AI tools: the app layer, the architecture, and the bugs nobody else could crack.* Live demo: https://sokrates-sigma.vercel.app
+   3. **Sokrates / SkillForge.** AWS × SAP Agentic AI University Hackathon Indonesia 2026 (Sokrates Agentic AI Hackathon), 2nd place, Intelligent Manufacturing track, 224 teams (top 40 finalists), team Choco Munchacho. Measured: re-plans a disrupted shift in 4.8 s; in the demo plant, modelled late-delivery penalties fell from Rp 150.8M to Rp 3.85M. Code links the team repo, fadilaisy/Sokrates. Role, in the user's words: *the problems that got past my teammates and their AI tools: the app layer, the architecture, and the bugs nobody else could crack.* Live demo: https://sokrates-sigma.vercel.app
    4. **BacktestEngine.** A terminal replay of a real scorecard run. Open a PR on that repo to fix the stale README and PLAN.
 
    **Built (4 Nov 2026).** Wide screens: the skills strip folds onto the Work frame's rect and waits there as the block while Work scrolls up under it. Work is tucked under the Toolbox pin's last screen, so the label and 01 rise while the strip folds in. All four projects share one frame box, and the "Selected work" label and number column start level with the frame's top edge. The scene pins, and the four projects play through one frame with the numbers rolling 01 → 04. Then Work 04 crawls into Contact's ink (below). The block stays hidden from here and returns at Contact. Phones, reduced motion and no-JS get a stacked list.
@@ -77,3 +77,11 @@ Short, confident, first person, no buzzwords, one sentence per idea. Each projec
 
 - Portrait: `raw/portrait-cutout.png` (1412×2507 RGBA). Body alpha is lifted to fully opaque. Soft hair edges are kept.
 - Raw originals live in `raw/` and are git-ignored.
+
+## Recruiter review (5 Nov 2026)
+
+- Intro shortened: dive pin 1.1 screens (was 1.6), About pin 1.8 (was 2.5) with a longer headline hold; About lands about 2 screens in.
+- Social preview `public/og.png` (1200 × 630, rendered from the title scene) with og and twitter tags.
+- Phones: the relay camera stays on the Agents panel; the terminal shows a narrow form without the +stop column.
+- solana-wallet-research described as a research engine that never executes trades.
+- No résumé yet: add a "Résumé (PDF)" link beside the email when one exists.

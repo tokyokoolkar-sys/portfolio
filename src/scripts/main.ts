@@ -114,7 +114,7 @@ function setupDive(glyph: HTMLElement) {
       scrollTrigger: {
         trigger: section,
         start: "top top",
-        end: pinLength(1.6, 1.1),
+        end: pinLength(1.1, 1.1),
         pin: true,
         scrub: true,
         invalidateOnRefresh: true,
@@ -197,13 +197,13 @@ function setupIntro(target: () => Rect) {
       scrollTrigger: {
         trigger: section,
         start: "top top",
-        end: pinLength(2.5, 1.7),
+        end: pinLength(1.8, 1.7),
         pin: true,
         scrub: true,
         invalidateOnRefresh: true,
       },
     })
-    .to({}, { duration: 0.35 }) // hold: read the headline
+    .to({}, { duration: 0.7 }) // hold: read the headline
     // About leaves before the field moves, so no text straddles the edge of the
     // shrinking orange. Lines exit up through the same masks they rose in by,
     // well past 100%: the line box (0.95) is tighter than the glyphs, so at
