@@ -26,6 +26,12 @@
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* The page scrolls as one take: no scrollbar breaking the poster's edge.
+       Wheel, keys, touch and the index bar still move it. */
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
   }
 
   ::selection {
