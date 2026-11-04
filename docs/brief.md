@@ -14,7 +14,7 @@ Agreed in the grilling session on 2026-11-04. This is the source of truth for sc
 ## Stack and hosting
 
 - Astro, Tailwind CSS 4, TypeScript, GSAP (ScrollTrigger, SplitText, Flip), Lenis. DOM-first. A canvas is used only where it earns its place (the pixel-bite reveal).
-- Public repo `tokyokoolkar-sys/portfolio` deploys to Vercel at `ataqah.vercel.app`, falling back to `ataqahramadhan.vercel.app`.
+- Public repo `tokyokoolkar-sys/portfolio` deploys to Vercel at `https://www.ataqah.space` (the apex `ataqah.space` redirects there).
 - Vercel Web Analytics (cookieless). Swiss-style social preview card.
 - Ask the user before creating the remote repo or pushing.
 
