@@ -232,7 +232,6 @@ export function createCrawl(canvas: HTMLCanvasElement, opts: Options) {
     if (p <= 0) {
       setDark(false);
       canvas.style.visibility = "hidden";
-      levels = null; // retake next time: the scene may have changed
       return;
     }
     if (!levels || !image) build();
@@ -293,6 +292,10 @@ export function createCrawl(canvas: HTMLCanvasElement, opts: Options) {
 
   return {
     draw,
+    /** Build ahead of the first frame (Work 04 must already be on screen). */
+    prepare() {
+      if (!levels || !image) build();
+    },
     /** Forget the redraw after a resize or refresh; the next frame rebuilds it. */
     invalidate() {
       image = null;

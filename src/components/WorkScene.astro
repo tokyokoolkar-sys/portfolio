@@ -213,6 +213,9 @@ const projects: Project[] = [
                     aria-label={p.media.label}
                   />
                   <p class="vid-tag type-label">{p.media.tag}</p>
+                  <button type="button" class="vid-toggle type-label hit" hidden>
+                    Pause video
+                  </button>
                 </div>
               )}
 
@@ -400,6 +403,22 @@ const projects: Project[] = [
     height: auto;
     transform-origin: 0 0;
   }
+  .vid-toggle {
+    position: absolute;
+    top: 3cqi;
+    right: 3cqi;
+    padding: 0.35em 0.6em;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    cursor: pointer;
+    pointer-events: auto;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .vid-toggle:hover {
+      color: var(--color-signal);
+    }
+  }
+
   /* No camera (reduced motion, no JS): fill the frame, no black band. */
   :global(html:not(.motion)) .vid video {
     height: 100%;

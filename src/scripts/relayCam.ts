@@ -34,8 +34,17 @@ function at(t: number): View {
   return { x: a.x + (b.x - a.x) * p, y: a.y + (b.y - a.y) * p, s: a.s + (b.s - a.s) * p };
 }
 
-export function relayCam(root: HTMLElement) {
+export type RelayCam = { setShown: (shown: boolean) => void };
+
+/**
+ * `managed`: the pinned Work take says when this frame is the one showing
+ * (all four frames share one rect there, so an observer can't tell).
+ * Otherwise an IntersectionObserver does. Each reveal starts the recording
+ * from the prompt, so the camera's story reads in order.
+ */
+export function relayCam(root: HTMLElement, managed = false): RelayCam | undefined {
   const video = root.querySelector("video");
+  const toggle = root.querySelector<HTMLButtonElement>(".vid-toggle");
   if (!video) return;
   const ratio = () => (video.videoHeight || 9) / (video.videoWidth || 16);
 
@@ -64,22 +73,48 @@ export function relayCam(root: HTMLElement) {
     else requestAnimationFrame(loop);
   };
 
-  new IntersectionObserver(([e]) => {
-    if (e.isIntersecting) {
-      video.play().catch(() => {
-        video.controls = true;
-      });
-      if (!running) {
-        running = true;
-        loop();
-      }
-    } else {
-      running = false;
-      video.pause();
+  let shown = false;
+  let userPaused = false;
+
+  const play = () => {
+    video.play().catch(() => {
+      video.controls = true;
+    });
+    if (!running) {
+      running = true;
+      loop();
     }
-  }).observe(root);
+  };
+  const stop = () => {
+    running = false;
+    video.pause();
+  };
+
+  const setShown = (next: boolean) => {
+    if (next === shown) return;
+    shown = next;
+    if (next) {
+      video.currentTime = 0;
+      frame();
+      if (!userPaused) play();
+    } else stop();
+  };
+
+  // Moving content longer than 5s needs a way to stop it (WCAG 2.2.2).
+  if (toggle) {
+    toggle.hidden = false;
+    toggle.addEventListener("click", () => {
+      userPaused = !userPaused;
+      toggle.textContent = userPaused ? "Play video" : "Pause video";
+      if (userPaused) stop();
+      else if (shown) play();
+    });
+  }
+
+  if (!managed) new IntersectionObserver(([e]) => setShown(e.isIntersecting)).observe(root);
 
   frame();
   video.addEventListener("loadedmetadata", frame);
   new ResizeObserver(frame).observe(root);
+  return { setShown };
 }

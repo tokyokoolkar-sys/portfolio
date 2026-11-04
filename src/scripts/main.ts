@@ -5,7 +5,7 @@ import Lenis from "lenis";
 import { pixelBite } from "./pixelBite";
 import { coverScale, measureStroke, offsetWithin } from "./glyph";
 import { createCrawl } from "./crawl";
-import { relayCam } from "./relayCam";
+import { relayCam, type RelayCam } from "./relayCam";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 ScrollTrigger.config({ ignoreMobileResize: true });
@@ -374,6 +374,9 @@ function setupWork(stage: boolean) {
   });
 
   let crawlDark = false;
+  // Set once the timeline is built: keeps the relay video and crawl in step
+  // with the pin, including when it toggles off without a time change.
+  let syncWork = () => {};
   const tl = gsap.timeline({
     defaults: { ease: "power3.inOut" },
     scrollTrigger: {
@@ -384,22 +387,32 @@ function setupWork(stage: boolean) {
       scrub: true,
       invalidateOnRefresh: true,
       // The crawl's ink only counts for the index bar while this scene is pinned.
-      onToggle: (self) => darkBar("crawl", self.isActive && crawlDark),
+      onToggle: (self) => {
+        darkBar("crawl", self.isActive && crawlDark);
+        syncWork();
+      },
     },
   });
 
   // Pinned: the frame's surface sits exactly under the waiting block, so swap them.
   tl.set(surfaces, { visibility: "visible" }, 0.01).set(block, { autoAlpha: 0 }, 0.01);
 
+  // Each project's window on the timeline: from its media wipe to its exit.
+  const shownFrom: number[] = [];
+  const shownTo: number[] = [];
+  let lastReady = 0; // Work 04 fully typed out: the crawl can snapshot it
   items.forEach((_, i) => {
     tl.to(media[i], { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6 }, i === 0 ? 0.1 : ">-0.15");
+    shownFrom[i] = tl.duration() - 0.6;
     if (media[i].classList.contains("work-media--terminal")) {
       // The replay types out as you scroll.
       tl.to(termLines, { autoAlpha: 1, duration: 0.01, stagger: 0.05, ease: "none" }, ">-0.2");
     }
+    if (i === items.length - 1) lastReady = tl.duration();
     tl.to({}, { duration: 1.2 }); // hold: read it
 
     // The last project stays up: the crawl eats it.
+    shownTo[i] = i === items.length - 1 ? Infinity : tl.duration() + 0.5;
     if (i === items.length - 1) return;
     const at = tl.duration();
     tl.to(media[i], { clipPath: "inset(0% 0% 100% 0%)", duration: 0.5 }, at);
@@ -438,6 +451,28 @@ function setupWork(stage: boolean) {
     paint();
   });
   tl.fromTo(proxy, { p: 0 }, { p: 1, ease: "none", duration: tl.duration() * (CRAWL / WORK), onUpdate: paint });
+
+  // The relay recording plays only while its frame is the one showing.
+  const relayAt = items.findIndex((it) => it.querySelector("[data-relay-cam]"));
+  const cam: RelayCam | undefined =
+    relayAt >= 0 ? relayCam(items[relayAt].querySelector<HTMLElement>("[data-relay-cam]")!, true) : undefined;
+  // Snapshot Work 04 for the crawl while the reader is still on it, so the
+  // crawl's first frame doesn't stall on the build.
+  let prepared = false;
+  const idle = (fn: () => void) =>
+    "requestIdleCallback" in window ? window.requestIdleCallback(fn, { timeout: 300 }) : setTimeout(fn, 50);
+  const onTime = () => {
+    const t = tl.time();
+    const active = !!tl.scrollTrigger?.isActive;
+    cam?.setShown(active && t >= shownFrom[relayAt] && t < shownTo[relayAt]);
+    if (t >= lastReady && proxy.p <= 0 && !prepared) {
+      prepared = true;
+      idle(crawl.prepare);
+    } else if (t < lastReady) prepared = false;
+  };
+  syncWork = onTime;
+  tl.eventCallback("onUpdate", onTime);
+  ScrollTrigger.addEventListener("refresh", onTime);
 }
 
 /* The index bar's text turns cream over ink. Two things can ask for it (the
@@ -562,7 +597,8 @@ async function boot() {
   setupSkills(stage);
   setupWork(stage);
   setupContact(stage);
-  document.querySelectorAll<HTMLElement>("[data-relay-cam]").forEach(relayCam);
+  // Stacked Work (phones, narrow screens): the camera watches for itself.
+  if (!stage) document.querySelectorAll<HTMLElement>("[data-relay-cam]").forEach((el) => relayCam(el));
   watchDark();
   ScrollTrigger.refresh();
 }
